@@ -419,6 +419,28 @@ def _location(source: dict) -> str:
 
 
 def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_report: dict | None = None) -> str:
+    """A complete web page: title, fonts, styles, the note body and MathJax."""
+    out = [f"<title>{_e(note['title'])}</title>", f'<link rel="stylesheet" href="{FONTS}">', f"<style>{CSS}</style>"]
+    out.append(render_main(note, concept_map, contexts, quality_report=quality_report))
+    out.append(
+        "<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
+        "svg:{fontCache:'global'},startup:{pageReady:function(){return MathJax.startup.defaultPageReady().then(function(){if(window.drawFlows)drawFlows();});}}};</script>"
+    )
+    out.append(f"<script>{FLOW_JS}</script>")
+    out.append(f'<script src="{MATHJAX}" async></script>')
+    return "\n".join(out) + "\n"
+
+
+def render_main(
+    note: dict,
+    concept_map: dict,
+    contexts: list[dict],
+    *,
+    quality_report: dict | None = None,
+    prefix: str = "",
+    eyebrow: str = "공부 노트",
+) -> str:
+    """The note body as one <main> element. `prefix` keeps ids unique when several notes share a document."""
     names = {c["id"]: c["name"] for c in concept_map["concepts"]}
     core = set(concept_map["core_concepts"])
     emphasis = {p["id"]: p for ctx in contexts for group in ctx["professor_context"].values() for p in group}
@@ -428,10 +450,9 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
 
     def fig(figure: dict) -> str:
         fig_counter[0] += 1
-        return render_figure(figure, f"fig{fig_counter[0]}")
+        return render_figure(figure, f"{prefix}fig{fig_counter[0]}")
 
-    out = [f"<title>{_e(note['title'])}</title>", f'<link rel="stylesheet" href="{FONTS}">', f"<style>{CSS}</style>"]
-    out.append('<main class="page">')
+    out = ['<main class="page">']
 
     if quality_report is not None and not quality_report["passed"]:
         errs = "".join(
@@ -442,7 +463,7 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
         out.append(f'<div class="banner"><strong>검토 필요</strong>: 자동 품질 검사에서 해결되지 않은 문제가 있습니다.<ul>{errs}</ul></div>')
 
     out.append(
-        f'<header class="flow"><div class="eyebrow">공부 노트</div><h1>{_e(note["title"])}</h1>'
+        f'<header class="flow"><div class="eyebrow">{_e(eyebrow)}</div><h1>{_e(note["title"])}</h1>'
         f'<div class="lede flow">{to_html(note["big_picture"])}</div></header>'
     )
     if note["objectives"]:
@@ -457,7 +478,7 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
         if i > 1:
             toc.append('<span class="sep" aria-hidden="true">→</span>')
         cls = ' class="core"' if cid in core else ""
-        toc.append(f'<a{cls} href="#c-{_e(cid)}">{i}. {_e(names.get(cid, cid))}</a>')
+        toc.append(f'<a{cls} href="#{prefix}c-{_e(cid)}">{i}. {_e(names.get(cid, cid))}</a>')
     out.append(f'<nav class="toc" aria-label="개념 흐름">{"".join(toc)}</nav>')
     out.append(
         '<p class="legend">굵은 테두리는 핵심 개념입니다. 상자의 <span class="tag">추론</span>은 자료에 직접 없지만 흐름상 추론한 내용, '
@@ -467,7 +488,7 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
     for number, entry in enumerate(note["entries"], start=1):
         cid = entry["concept_id"]
         badge = '<span class="badge">핵심</span>' if cid in core else ""
-        out.append(f'<section class="concept" id="c-{_e(cid)}">')
+        out.append(f'<section class="concept" id="{prefix}c-{_e(cid)}">')
         out.append(f'<div class="concept-head"><span class="num">{number}</span><h2>{_e(entry["title"])}</h2>{badge}</div>')
         support_started = False
         blocks = entry["blocks"]
@@ -537,7 +558,7 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
 
     exam = note["exam"]
     if exam["true_false"] or exam["problems"]:
-        out.append('<section class="exam" id="exam"><h2>시험 대비</h2>')
+        out.append(f'<section class="exam" id="{prefix}exam"><h2>시험 대비</h2>')
         if exam["true_false"]:
             out.append('<h3>개념 확인: 참일까 거짓일까</h3><div class="tf-list">')
             for i, tf in enumerate(exam["true_false"], start=1):
@@ -568,13 +589,7 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
         out.append(f'<section class="panel"><h2>아직 확인이 필요한 부분</h2><p class="lede">자료만으로는 확인할 수 없었던 부분입니다. 수업 필기와 대조해 보세요.</p><ul>{items}</ul></section>')
 
     out.append("</main>")
-    out.append(
-        "<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
-        "svg:{fontCache:'global'},startup:{pageReady:function(){return MathJax.startup.defaultPageReady().then(function(){if(window.drawFlows)drawFlows();});}}};</script>"
-    )
-    out.append(f"<script>{FLOW_JS}</script>")
-    out.append(f'<script src="{MATHJAX}" async></script>')
-    return "\n".join(out) + "\n"
+    return "\n".join(out)
 
 
 def _is_plot_block(block: dict) -> bool:

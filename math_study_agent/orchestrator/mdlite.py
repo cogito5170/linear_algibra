@@ -65,7 +65,12 @@ def _list(lines: list[str], ordered: bool) -> str:
         elif items:
             items[-1] += " " + line.strip()
     tag = "ol" if ordered else "ul"
-    return f"<{tag}>" + "".join(f"<li>{_inline(i)}</li>" for i in items) + f"</{tag}>"
+    start = ""
+    if ordered:
+        first = int(re.match(r"\s*(\d+)", lines[0]).group(1))
+        if first != 1:
+            start = f' start="{first}"'
+    return f"<{tag}{start}>" + "".join(f"<li>{_inline(i)}</li>" for i in items) + f"</{tag}>"
 
 
 def to_html(markdown: str) -> str:

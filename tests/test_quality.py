@@ -166,6 +166,7 @@ class MarkdownLiteTest(unittest.TestCase):
         self.assertIn("<ul><li>하나</li><li>둘</li></ul>", out)
         self.assertIn("<ol><li>첫째</li>", out)
         self.assertIn("<td>1</td>", out)
+        self.assertIn('<ol start="6"><li>여섯</li>', to_html("6. 여섯\n7. 일곱"))
 
 
 if __name__ == "__main__":

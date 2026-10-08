@@ -6,6 +6,7 @@
     math-study ingest --slides lec03.pdf --out bundle.json      # inspect chunk ids
     math-study validate runs/lec03/concept_map.json             # check any payload
     math-study schemas schemas/                                 # export JSON schemas
+    math-study pdf runs/lec03 runs/lec04 --out notes.pdf        # print notes as one PDF
 
 Exit codes: 0 = note ready, 2 = note produced but needs review, 1 = failure.
 """
@@ -101,6 +102,16 @@ def cmd_run(args) -> int:
     return 0 if result.status == "ok" else 2
 
 
+def cmd_pdf(args) -> int:
+    from .orchestrator.export_pdf import export_pdf
+
+    info = export_pdf(args.runs, args.out, title=args.title, keep_html=args.html)
+    print(f"pdf: {info['pdf']} ({info['notes']} notes)")
+    if info["math_failures"]:
+        print(f"warning: {info['math_failures']} formula(s) could not be converted and are shown as TeX", file=sys.stderr)
+    return 0
+
+
 def cmd_ingest(args) -> int:
     bundle = _bundle_from_args(args)
     text = json.dumps(bundle, ensure_ascii=False, indent=2) + "\n"
@@ -146,6 +157,13 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--max-revisions", type=int, default=1)
     run.add_argument("--no-reviewer", action="store_true", help="skip the LLM quality reviewer")
     run.set_defaults(func=cmd_run)
+
+    pdf = sub.add_parser("pdf", help="export finished notes (run directories) as one PDF")
+    pdf.add_argument("runs", nargs="+", help="run directories produced by `run`, in order")
+    pdf.add_argument("--out", required=True, help="output PDF path")
+    pdf.add_argument("--title", default="공부 노트", help="title on the cover page")
+    pdf.add_argument("--html", help="also keep the print HTML at this path")
+    pdf.set_defaults(func=cmd_pdf)
 
     ingest = sub.add_parser("ingest", help="build the material bundle only")
     _add_source_args(ingest)

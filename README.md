@@ -94,6 +94,14 @@ python3 -m math_study_agent run \
 
 종료 코드: `0` 노트 완성, `2` 노트는 만들었지만 품질 검사 오류가 남아 **검토 필요**, `1` 실패.
 
+여러 노트를 PDF 하나로 묶기 (표지 + 강의별 새 페이지, 시험 대비 답 펼침, 쪽 번호):
+
+```zsh
+python3 -m math_study_agent pdf runs/1.1-1.2 runs/1.3-1.5 --out 선형대수_노트.pdf --title '선형대수학 공부 노트'
+```
+
+PDF는 인터넷 없이 만들어집니다. 수식은 pandoc으로 미리 MathML로 바꾸고(브라우저가 기본으로 렌더링), headless Chromium으로 인쇄합니다. pandoc과 Chromium(또는 Chrome, `CHROME_PATH`로 지정)이 필요합니다.
+
 기타 명령 (순서대로: chunk id 확인, 아무 payload나 schema 검사, JSON Schema 내보내기):
 
 ```zsh
