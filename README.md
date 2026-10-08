@@ -38,22 +38,35 @@
 
 ## 빠른 시작
 
-```bash
-pip install -e '.[llm,pdf]'        # anthropic SDK, PDF 파서 포함
+아래 명령은 zsh/bash 그대로 붙여 넣어 실행할 수 있습니다. zsh는 기본 설정에서 대화형 셸의 `#` 주석을 인식하지 않고 `[ ]`를 파일 패턴으로 해석하므로, 명령 줄에 주석을 넣지 않고 `'.[llm,pdf]'`는 따옴표로 감쌌습니다.
 
-# API 없이 예제 재생 (녹화된 agent 출력 사용)
-python -m math_study_agent run \
+설치 (anthropic SDK와 PDF 파서 포함):
+
+```zsh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e '.[llm,pdf]'
+```
+
+API 없이 예제 재생 (녹화된 agent 출력 사용):
+
+```zsh
+python3 -m math_study_agent run \
   --bundle examples/linear_independence/bundle.json \
   --replay examples/linear_independence/recorded \
   --out runs/demo
+```
 
-# 실제 실행 (ANTHROPIC_API_KEY 또는 `ant auth login` 필요)
-python -m math_study_agent run \
+실제 실행 (`ANTHROPIC_API_KEY` 또는 `ant auth login` 필요):
+
+```zsh
+export ANTHROPIC_API_KEY='sk-ant-...'
+python3 -m math_study_agent run \
   --slides lec03.pdf \
   --prof-notes board_notes.md \
   --handwritten handwritten_converted.txt \
   --user-notes my_notes.md \
-  --title "3강. 일차결합, 생성(Span), 일차독립" \
+  --title '3강. 일차결합, 생성(Span), 일차독립' \
   --out runs/lec03
 ```
 
@@ -63,12 +76,12 @@ python -m math_study_agent run \
 
 종료 코드: `0` 노트 완성, `2` 노트는 만들었지만 품질 검사 오류가 남아 **검토 필요**, `1` 실패.
 
-기타 명령:
+기타 명령 (순서대로: chunk id 확인, 아무 payload나 schema 검사, JSON Schema 내보내기):
 
-```bash
-python -m math_study_agent ingest --slides lec03.pdf --out bundle.json   # chunk id 확인
-python -m math_study_agent validate runs/lec03/concept_map.json          # 아무 payload나 schema 검사
-python -m math_study_agent schemas schemas/                              # JSON Schema 내보내기
+```zsh
+python3 -m math_study_agent ingest --slides lec03.pdf --out bundle.json
+python3 -m math_study_agent validate runs/lec03/concept_map.json
+python3 -m math_study_agent schemas schemas/
 ```
 
 주요 옵션: `--model`(기본 `claude-opus-5-5`), `--effort`(기본 `high`), `--max-attempts`(agent별 재시도, 기본 2), `--max-revisions`(품질 검사 후 재작성 횟수, 기본 1), `--no-reviewer`, `--no-fallbacks`, `--handwritten-author professor|user|unknown`.
@@ -131,9 +144,11 @@ guard가 바꾼 모든 것은 품질 보고서에 기록됩니다. 조용히 고
 
 ## 테스트
 
-```bash
-python -m unittest discover -s tests -t .     # 또는 pytest
+```zsh
+python3 -m unittest discover -s tests -t .
 ```
+
+pytest가 설치되어 있으면 `pytest`로도 실행됩니다.
 
 테스트는 API 호출 없이 녹화된 예제와 scripted backend로 다음을 확인합니다: 모든 schema의 유효성과 structured-output 호환성, 예제 전체 파이프라인, 재시도와 피드백, 실패 시 중단과 기록, 근거 검증 guard(조작된 인용, 근거 없는 교수님 강조, 출처 재귀속), 각 agent의 의미 검증, 품질 검사와 재작성 루프, 렌더링, Anthropic backend의 요청 형태와 오류 처리, CLI.
 
