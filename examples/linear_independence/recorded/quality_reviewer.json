@@ -1,0 +1,15 @@
+{
+  "schema": "math_quality_review/1",
+  "findings": [
+    {
+      "category": "user_readability",
+      "severity": "info",
+      "message": "C3의 '직관적으로 이해하기' 섹션이 다른 섹션보다 길다.",
+      "targets": [
+        "C3.intuition"
+      ],
+      "suggestion": "정리(T2) 인용 부분을 짧게 줄이면 흐름이 더 가벼워진다."
+    }
+  ],
+  "overall_comment": "정의의 조건과 함의 방향(⇒)이 정확하게 유지되었다. 보충 수식과 일반 지식으로 보충한 반례가 명시적으로 표시되어 있고, 교수님 관련 내용은 모두 근거 id가 있다."
+}

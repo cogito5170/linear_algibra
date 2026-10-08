@@ -1,0 +1,98 @@
+{
+  "started_at": "2026-10-08T11:36:58.880994+00:00",
+  "bundle_id": "la-lec03",
+  "stages": [
+    {
+      "stage": "validate_input",
+      "status": "ok",
+      "seconds": 0.001
+    },
+    {
+      "stage": "material_analyst",
+      "status": "ok",
+      "seconds": 0.01,
+      "attempts": [
+        {
+          "attempt": 1,
+          "model": "replay:material_analyst.json",
+          "usage": {},
+          "outcome": "ok",
+          "errors": [],
+          "seconds": 0.009
+        }
+      ]
+    },
+    {
+      "stage": "evidence_guard:analysis",
+      "status": "ok",
+      "seconds": 0.002
+    },
+    {
+      "stage": "concept_mapper",
+      "status": "ok",
+      "seconds": 0.011,
+      "attempts": [
+        {
+          "attempt": 1,
+          "model": "replay:concept_mapper.json",
+          "usage": {},
+          "outcome": "ok",
+          "errors": [],
+          "seconds": 0.004
+        }
+      ]
+    },
+    {
+      "stage": "evidence_guard:concept_map",
+      "status": "ok",
+      "seconds": 0.001
+    },
+    {
+      "stage": "learning_contexts",
+      "status": "ok",
+      "seconds": 0.01
+    },
+    {
+      "stage": "intuition_teacher",
+      "status": "ok",
+      "seconds": 0.018,
+      "attempts": [
+        {
+          "attempt": 1,
+          "model": "replay:intuition_teacher.json",
+          "usage": {},
+          "outcome": "ok",
+          "errors": [],
+          "seconds": 0.006
+        }
+      ]
+    },
+    {
+      "stage": "note_editor",
+      "status": "ok",
+      "seconds": 0.024,
+      "attempts": [
+        {
+          "attempt": 1,
+          "model": "replay:note_editor.json",
+          "usage": {},
+          "outcome": "ok",
+          "errors": [],
+          "seconds": 0.005
+        }
+      ]
+    },
+    {
+      "stage": "quality_check",
+      "status": "ok",
+      "seconds": 0.018
+    }
+  ],
+  "status": "ok",
+  "finished_at": "2026-10-08T11:36:58.980933+00:00",
+  "quality": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 1
+  }
+}

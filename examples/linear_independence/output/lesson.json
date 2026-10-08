@@ -1,0 +1,341 @@
+{
+  "schema": "math_intuition_lesson/1",
+  "lessons": [
+    {
+      "concept_id": "C1",
+      "name": "일차결합",
+      "one_line_intuition": "벡터를 재료로 삼아, 각각 얼마나 쓸지 정해서 섞은 결과.",
+      "why_needed": {
+        "text": "오늘의 질문은 '몇 개의 벡터로 공간 전체를 표현할 수 있는가?'이다. 이 질문을 다루려면 '벡터 몇 개로 다른 벡터를 만든다'가 정확히 무슨 뜻인지부터 정해야 한다. 그 방법이 일차결합이다.",
+        "status": "inferred"
+      },
+      "meaning": "벡터 몇 개를 정해 둔다. 각각을 몇 배 할지 고른 뒤 모두 더한다. 그렇게 나온 벡터 하나가 일차결합이다. 배수는 0이나 음수여도 된다.",
+      "intuition": {
+        "intuitive": "벡터를 요리 재료, 계수를 넣는 양이라고 생각하자. 같은 재료라도 양을 바꾸면 결과가 달라진다.",
+        "rigorous": "엄밀하게는 '양'에 0과 음수도 들어간다. 0배는 그 재료를 쓰지 않는 것이고, 음수배는 방향을 뒤집어 쓰는 것이다.",
+        "analogy_caveat": "실제 요리에는 '음수만큼 넣기'가 없다. 이 지점에서 비유가 깨진다."
+      },
+      "connections": {
+        "from_previous": "지난 시간의 벡터공간은 덧셈과 스칼라배를 자유롭게 할 수 있는 공간이었다. 일차결합은 이 두 연산만으로 만들 수 있는 결과다.",
+        "to_next": "일차결합을 전부 모으면 span이 되고, 영벡터를 만드는 일차결합을 살펴보면 일차독립이 나온다.",
+        "related": [
+          {
+            "concept_id": "C2",
+            "relation": "span은 일차결합들의 모음"
+          },
+          {
+            "concept_id": "C3",
+            "relation": "일차독립은 영벡터가 되는 일차결합으로 정의"
+          }
+        ]
+      },
+      "example": {
+        "title": "R^2에서 섞어 보기",
+        "setup": "v1 = (1,0), v2 = (0,1), 계수 c1 = 3, c2 = -2",
+        "walkthrough": "3(1,0) + (-2)(0,1) = (3,0) + (0,-2) = (3,-2)",
+        "takeaway": "계수만 바꾸면 같은 두 벡터로 여러 벡터를 만들 수 있다.",
+        "example_ref": null
+      },
+      "formulas": [
+        {
+          "formula_ref": "F1",
+          "origin": "material",
+          "latex": "c_1v_1 + c_2v_2 + \\cdots + c_kv_k",
+          "plain_meaning": "각 벡터 v_i를 c_i배 해서 모두 더한다.",
+          "parts": [
+            {
+              "symbol": "v_i",
+              "meaning": "재료 벡터"
+            },
+            {
+              "symbol": "c_i",
+              "meaning": "그 재료를 얼마나 쓸지 정하는 스칼라"
+            }
+          ]
+        }
+      ],
+      "rigorous_note": null,
+      "professor_points": [],
+      "pitfalls": [
+        {
+          "text": "계수는 0이나 음수여도 된다. '양수만큼 섞기'로만 생각하면 만들 수 있는 범위를 좁게 착각한다.",
+          "basis_refs": [
+            "D1"
+          ],
+          "status": "inferred"
+        }
+      ],
+      "review_points": [
+        "(1,1)과 (1,-1)로 (2,0)을 만드는 계수를 찾을 수 있는가?",
+        "일차결합에 쓰이는 두 연산은 무엇인가?"
+      ],
+      "epistemic_notes": []
+    },
+    {
+      "concept_id": "C2",
+      "name": "생성 (Span)",
+      "one_line_intuition": "주어진 벡터들로 만들 수 있는 모든 것을 모은 집합.",
+      "why_needed": {
+        "text": "일차결합은 '하나의' 결과다. 그런데 오늘의 질문은 '공간 전체를 표현할 수 있는가?'이다. 그러려면 이 재료들로 만들 수 있는 것을 '전부' 한꺼번에 가리킬 이름이 필요하다. 그게 span이다.",
+        "status": "inferred"
+      },
+      "meaning": "계수를 모든 실수로 바꿔 가며 만든 일차결합을 전부 모은 것이다. 그래서 span은 벡터 하나가 아니라 벡터들의 집합이다. 이 집합은 V의 부분공간이 된다.",
+      "intuition": {
+        "intuitive": "span은 재료 벡터들로 '갈 수 있는 모든 곳'이다. R^2에서 (1,0) 하나로는 x축 위만 갈 수 있다. (0,1)을 재료로 더하면 평면 전체로 갈 수 있다.",
+        "rigorous": "엄밀하게는 span은 만들 수 있는 벡터들의 집합이고, 이 집합은 V의 부분공간이다. 즉 그 안에서 더하거나 스칼라배를 해도 밖으로 나가지 않는다.",
+        "analogy_caveat": null
+      },
+      "connections": {
+        "from_previous": "일차결합이 '한 번 섞은 결과'라면, span은 '섞을 수 있는 모든 방법의 결과'를 모은 것이다.",
+        "to_next": "span이 같더라도 재료가 쓸데없이 많을 수 있다. 그 낭비를 따지는 것이 일차독립이다.",
+        "related": [
+          {
+            "concept_id": "C1",
+            "relation": "일차결합을 모은 것"
+          },
+          {
+            "concept_id": "C3",
+            "relation": "일차독립이면 하나라도 빼면 span이 줄어든다"
+          },
+          {
+            "concept_id": "C4",
+            "relation": "기저에 필요한 조건 중 하나"
+          }
+        ]
+      },
+      "example": {
+        "title": "(1,0)과 (0,1)로 평면 전체 만들기",
+        "setup": "R^2의 아무 벡터 (a,b)를 하나 고른다.",
+        "walkthrough": "(a,b) = a(1,0) + b(0,1)이다. 어떤 (a,b)를 골라도 두 벡터의 일차결합으로 쓸 수 있다. 따라서 span{(1,0),(0,1)} = R^2이다.",
+        "takeaway": "'span이 공간 전체와 같다'는 '그 공간의 모든 벡터를 만들 수 있다'는 뜻이다.",
+        "example_ref": "E1"
+      },
+      "formulas": [
+        {
+          "formula_ref": "F2",
+          "origin": "material",
+          "latex": "\\operatorname{span}\\{v_1,\\dots,v_k\\} = \\{\\, c_1v_1+\\cdots+c_kv_k : c_1,\\dots,c_k \\in \\mathbb{R} \\,\\}",
+          "plain_meaning": "계수를 모든 실수로 바꿔 가며 만든 일차결합 전체의 집합이다.",
+          "parts": [
+            {
+              "symbol": "\\{\\ \\cdot : \\cdot\\ \\}",
+              "meaning": "':' 뒤의 조건을 만족하는 것들을 모은 집합"
+            },
+            {
+              "symbol": "c_i \\in \\mathbb{R}",
+              "meaning": "계수는 어떤 실수든 될 수 있다"
+            }
+          ]
+        }
+      ],
+      "rigorous_note": "span의 계수는 실수 전체를 움직인다. 계수를 일부 값으로 제한하면 span이 아니다.",
+      "professor_points": [
+        {
+          "emphasis_ref": "P2",
+          "kind": "explanation",
+          "paraphrase": "span은 '재료로 만들 수 있는 모든 벡터'라는 판서 설명."
+        }
+      ],
+      "pitfalls": [
+        {
+          "text": "span은 벡터 하나가 아니라 집합이다. 'span을 구하라'는 '만들 수 있는 벡터 전체를 묘사하라'는 뜻이다.",
+          "basis_refs": [
+            "D2"
+          ],
+          "status": "inferred"
+        }
+      ],
+      "review_points": [
+        "span{(1,2)}를 그림으로 그리면 어떤 모양인가?",
+        "span{(1,0),(0,1)} = R^2인 이유를 한 줄로 말할 수 있는가?"
+      ],
+      "epistemic_notes": []
+    },
+    {
+      "concept_id": "C3",
+      "name": "일차독립 / 일차종속",
+      "one_line_intuition": "재료 벡터들 중에 '다른 재료로 대신 만들 수 있는' 중복이 없는 상태.",
+      "why_needed": {
+        "text": "span으로 '무엇을 만들 수 있는가'를 알게 됐다. 그런데 같은 span을 더 적은 벡터로 만들 수 있다면, 어떤 벡터는 쓸데없이 끼어 있는 셈이다. '몇 개면 충분한가'에 답하려면 이런 낭비가 있는지 판단할 기준이 필요하다.",
+        "status": "inferred"
+      },
+      "meaning": "벡터들로 영벡터를 만드는 방법을 생각한다. 모든 계수를 0으로 두면 당연히 영벡터가 나온다. 이것을 자명한 해라고 한다. 일차독립은 '영벡터를 만드는 방법이 이것 하나뿐'이라는 뜻이다. 다른 방법이 하나라도 있으면 일차종속이다.",
+      "intuition": {
+        "intuitive": "재료 중 하나를 나머지로 만들 수 있다면, 그 재료는 없어도 된다. 일차종속은 이런 '대체 가능한 재료'가 있는 상태다. 일차독립은 그런 재료가 없는 상태다. 그래서 일차독립인 묶음에서는 어떤 벡터를 하나 빼도 span이 줄어든다.",
+        "rigorous": "엄밀하게는 정의가 '영벡터를 만드는 계수'로 되어 있다. 이것이 '어떤 벡터가 나머지의 일차결합'이라는 말과 같다는 것은 정리로 따로 보장된다: 일차종속 ⇔ 어떤 v_j가 나머지 벡터들의 일차결합으로 표현된다. 여기서 '어떤 v_j'는 모든 벡터가 아니라 적어도 하나라는 뜻이다.",
+        "analogy_caveat": "'서로 다른 방향이면 독립'은 벡터가 2개일 때만 맞는다. 3개 이상이면 어느 두 개도 평행하지 않아도 종속일 수 있다."
+      },
+      "connections": {
+        "from_previous": "span이 '무엇을 만들 수 있나'를 묻는다면, 일차독립은 '낭비 없이 만드나'를 묻는다.",
+        "to_next": "만들 수 있는 범위가 충분하고(span) 낭비가 없는(일차독립) 재료 세트가 다음 시간의 기저다.",
+        "related": [
+          {
+            "concept_id": "C1",
+            "relation": "정의에 일차결합을 사용"
+          },
+          {
+            "concept_id": "C2",
+            "relation": "하나라도 빼면 span이 줄어든다"
+          },
+          {
+            "concept_id": "C4",
+            "relation": "기저에 필요한 조건 중 하나"
+          }
+        ]
+      },
+      "example": {
+        "title": "(1,2), (2,4)는 왜 종속인가",
+        "setup": "v1 = (1,2), v2 = (2,4)",
+        "walkthrough": "v2 = 2v1이다. 그래서 2v1 - v2 = 0, 즉 계수 (2, -1)로 영벡터를 만들 수 있다. 계수가 모두 0이 아닌데 영벡터가 나왔으니 일차종속이다. 반면 (1,0), (0,1)은 c1(1,0) + c2(0,1) = (c1, c2)이므로, 이것이 (0,0)이 되려면 c1 = c2 = 0일 수밖에 없다. 그래서 일차독립이다.",
+        "takeaway": "판정은 언제나 '영벡터를 만드는 계수가 전부 0인 것 말고도 있는가?'를 확인하는 것이다.",
+        "example_ref": "E2"
+      },
+      "formulas": [
+        {
+          "formula_ref": "F3",
+          "origin": "material",
+          "latex": "c_1v_1+\\cdots+c_kv_k = 0 \\;\\Rightarrow\\; c_1=\\cdots=c_k=0",
+          "plain_meaning": "영벡터를 만드는 일차결합은 모든 계수가 0인 것뿐이다.",
+          "parts": [
+            {
+              "symbol": "0",
+              "meaning": "영벡터"
+            },
+            {
+              "symbol": "\\Rightarrow",
+              "meaning": "'~이면 반드시'"
+            }
+          ]
+        },
+        {
+          "formula_ref": null,
+          "origin": "supplementary",
+          "latex": "A\\mathbf{c} = \\mathbf{0}, \\qquad A = \\begin{bmatrix} v_1 & v_2 & \\cdots & v_k \\end{bmatrix}",
+          "plain_meaning": "벡터들을 열로 세운 행렬 A에 대해, 계수 벡터 c를 미지수로 하는 동차연립방정식이다. 해가 c = 0뿐이면 일차독립이다.",
+          "parts": [
+            {
+              "symbol": "A",
+              "meaning": "v_1, ..., v_k를 열로 세운 행렬"
+            },
+            {
+              "symbol": "\\mathbf{c}",
+              "meaning": "계수 (c_1, ..., c_k)를 모은 벡터"
+            }
+          ]
+        }
+      ],
+      "rigorous_note": "정의의 방향에 주의하자. '모든 계수가 0이면 영벡터'는 항상 참이라 아무것도 알려 주지 않는다. 일차독립은 반대 방향, '영벡터이면 모든 계수가 0'이다. 행렬 표현 Ac = 0은 벡터가 R^n의 벡터일 때 쓸 수 있다.",
+      "professor_points": [
+        {
+          "emphasis_ref": "P1",
+          "kind": "emphasis",
+          "paraphrase": "교안에 '★ 중요'로 표시: 자명한 해만 존재하는가?"
+        },
+        {
+          "emphasis_ref": "P3",
+          "kind": "explanation",
+          "paraphrase": "일차독립 = 쓸데없는 벡터가 없다. 하나라도 빼면 span이 줄어든다."
+        },
+        {
+          "emphasis_ref": "P4",
+          "kind": "warning",
+          "paraphrase": "영벡터가 포함되면 항상 일차종속."
+        },
+        {
+          "emphasis_ref": "P5",
+          "kind": "emphasis",
+          "paraphrase": "시험에 자주 나옴: 일차독립 판정은 동차연립방정식의 해가 자명해뿐인지 확인하는 것."
+        }
+      ],
+      "pitfalls": [
+        {
+          "text": "'모든 계수가 0이면 영벡터가 된다'는 항상 참이다. 일차독립은 그 반대 방향이다.",
+          "basis_refs": [
+            "D3",
+            "F3"
+          ],
+          "status": "inferred"
+        },
+        {
+          "text": "영벡터가 하나라도 들어 있으면 항상 일차종속이다. 영벡터의 계수만 1로, 나머지를 0으로 두면 0이 아닌 계수로 영벡터가 만들어진다.",
+          "basis_refs": [
+            "P4"
+          ],
+          "status": "observed"
+        },
+        {
+          "text": "'어느 두 벡터도 평행하지 않으면 독립'은 3개 이상에서 틀릴 수 있다. 예: R^3의 (1,0,0), (0,1,0), (1,1,0)은 어느 둘도 평행하지 않지만 (1,0,0) + (0,1,0) - (1,1,0) = 0이라 종속이다.",
+          "basis_refs": [
+            "U1"
+          ],
+          "status": "inferred"
+        }
+      ],
+      "review_points": [
+        "일차독립의 정의를 '영벡터'라는 말을 써서 한 문장으로 말할 수 있는가?",
+        "(1,2), (2,4)가 종속임을 보이는 계수를 찾을 수 있는가?",
+        "영벡터가 들어 있으면 왜 종속인가?",
+        "일차독립 판정을 동차연립방정식 문제로 바꿀 수 있는가?"
+      ],
+      "epistemic_notes": [
+        {
+          "text": "'평행하지 않으면 독립인가?'(U1)는 필기에서 빠진 부분이다. 위의 반례는 일반적인 선형대수 사실로 보충한 것이며, 수업에서 어떻게 다뤘는지는 자료로 확인되지 않는다.",
+          "status": "inferred"
+        },
+        {
+          "text": "판서의 '1·0 = 0 이니까'는 영벡터의 계수를 1로 두는 논리로 해석했다. 판서에 이유가 한 줄로만 적혀 있어 정확한 의도는 확인되지 않는다(U2).",
+          "status": "uncertain"
+        }
+      ]
+    },
+    {
+      "concept_id": "C4",
+      "name": "기저 (Basis)",
+      "one_line_intuition": "공간 전체를 만들 수 있으면서 낭비가 없는 재료 세트. 다음 시간 주제.",
+      "why_needed": {
+        "text": "오늘의 질문 '몇 개의 벡터로 공간 전체를 표현할 수 있는가?'에 대한 답이 될 개념으로 보인다. span은 '충분한가', 일차독립은 '낭비가 없는가'를 따지므로, 둘을 함께 만족하는 묶음이 자연스러운 다음 단계다.",
+        "status": "inferred"
+      },
+      "meaning": "이번 자료에는 기저의 정의가 없다. 내 필기에 따르면 다음 시간에 다루며, span과 일차독립이 둘 다 필요하다.",
+      "intuition": {
+        "intuitive": "모자라지도 남지도 않는, 공간을 만들기에 딱 맞는 재료 세트라고 예상할 수 있다.",
+        "rigorous": "정확한 정의는 다음 강의에서 확인해야 한다.",
+        "analogy_caveat": null
+      },
+      "connections": {
+        "from_previous": "span(충분함)과 일차독립(낭비 없음)을 합친 개념이다.",
+        "to_next": null,
+        "related": [
+          {
+            "concept_id": "C2",
+            "relation": "필요 조건"
+          },
+          {
+            "concept_id": "C3",
+            "relation": "필요 조건"
+          }
+        ]
+      },
+      "example": null,
+      "formulas": [],
+      "rigorous_note": null,
+      "professor_points": [
+        {
+          "emphasis_ref": "P6",
+          "kind": "explanation",
+          "paraphrase": "다음 시간에 기저를 다루며, span과 일차독립이 둘 다 필요하다 (내 필기 기록)."
+        }
+      ],
+      "pitfalls": [],
+      "review_points": [
+        "기저가 되려면 왜 span과 일차독립이 둘 다 필요할지 스스로 예상해 보자."
+      ],
+      "epistemic_notes": [
+        {
+          "text": "기저의 정의는 이번 자료에 없다(U3). 위 설명은 예고와 강의 흐름으로부터 추론한 것이다.",
+          "status": "uncertain"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_material_bundle/1"
+    },
+    "bundle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "lecture_slides",
+              "lecture_pdf",
+              "professor_notes",
+              "handwritten_notes",
+              "user_notes"
+            ]
+          },
+          "author": {
+            "type": "string",
+            "enum": [
+              "professor",
+              "user",
+              "unknown"
+            ],
+            "description": "누가 작성한 자료인가. 교수님 발언/강조의 근거는 professor 자료여야 한다."
+          },
+          "title": {
+            "type": "string"
+          },
+          "chunks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "chunk_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "page": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "section": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chunk_id",
+                "page",
+                "section",
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "material_id",
+          "kind",
+          "author",
+          "title",
+          "chunks"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "schema",
+    "bundle_id",
+    "title",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "description": "Agent 1(Material Analyst)의 입력. 교안/필기를 주소 지정 가능한 chunk로 나눈 것.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_material_bundle:v1",
+  "title": "math_material_bundle/1"
+}

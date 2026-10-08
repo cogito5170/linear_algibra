@@ -1,0 +1,533 @@
+{
+  "schema": "math_material_analysis/1",
+  "material_id": "la-lec03",
+  "concepts": [
+    {
+      "id": "C1",
+      "name": "일차결합 (Linear Combination)",
+      "description": "벡터들에 스칼라를 곱해 더한 것. span과 일차독립을 정의하는 재료로 쓰인다.",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#002",
+          "quote": "일차결합 (Linear Combination)"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "C2",
+      "name": "생성 (Span)",
+      "description": "주어진 벡터들의 모든 일차결합을 모은 집합.",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "생성 (Span)"
+        },
+        {
+          "chunk_id": "prof#001",
+          "quote": "span = 만들 수 있는 것 전부."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "C3",
+      "name": "일차독립 / 일차종속",
+      "description": "일차결합으로 영벡터를 만드는 방법이 모든 계수가 0인 경우뿐인지에 대한 성질.",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#004",
+          "quote": "일차독립 (Linear Independence)"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "C4",
+      "name": "기저 (Basis)",
+      "description": "다음 강의 주제로 언급됨. 이번 자료에는 정의가 없다.",
+      "status": "observed",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "chunk_id": "mine#001",
+          "quote": "교수님이 다음 시간에 기저(basis) 한다고 하심."
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "definitions": [
+    {
+      "id": "D1",
+      "concept_id": "C1",
+      "term": "일차결합",
+      "statement": "벡터 v1, ..., vk ∈ V와 스칼라 c1, ..., ck에 대해 c1v1 + c2v2 + ... + ckvk를 v1, ..., vk의 일차결합이라 한다.",
+      "conditions": [
+        "v1, ..., vk는 벡터공간 V의 벡터",
+        "c1, ..., ck는 스칼라"
+      ],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#002",
+          "quote": "를 v1, ..., vk 의 일차결합이라 한다."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "D2",
+      "concept_id": "C2",
+      "term": "span",
+      "statement": "span{v1, ..., vk}는 v1, ..., vk의 모든 일차결합의 집합이다.",
+      "conditions": [
+        "계수 c1, ..., ck는 실수 전체(R)를 움직인다"
+      ],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "v1, ..., vk 의 모든 일차결합의 집합."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "D3",
+      "concept_id": "C3",
+      "term": "일차독립 / 일차종속",
+      "statement": "c1v1 + ... + ckvk = 0 이면 반드시 c1 = ... = ck = 0일 때 v1, ..., vk는 일차독립이다. 그렇지 않으면(모두 0은 아닌 계수로 영벡터를 만들 수 있으면) 일차종속이다.",
+      "conditions": [
+        "'이면'의 방향: 영벡터가 되는 모든 경우에 계수가 전부 0이어야 한다"
+      ],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#004",
+          "quote": "v1, ..., vk 는 일차독립이라 한다."
+        },
+        {
+          "chunk_id": "slides#004",
+          "quote": "그렇지 않으면 일차종속이라 한다."
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "formulas": [
+    {
+      "id": "F1",
+      "concept_id": "C1",
+      "latex": "c_1v_1 + c_2v_2 + \\cdots + c_kv_k",
+      "meaning": "각 벡터를 원하는 만큼 늘리거나 줄여서 모두 더한 벡터",
+      "variables": [
+        {
+          "symbol": "v_i",
+          "meaning": "재료가 되는 벡터"
+        },
+        {
+          "symbol": "c_i",
+          "meaning": "각 벡터를 얼마나 쓸지 정하는 스칼라(계수)"
+        }
+      ],
+      "conditions": [],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#002",
+          "quote": "c1v1 + c2v2 + ... + ckvk"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "F2",
+      "concept_id": "C2",
+      "latex": "\\operatorname{span}\\{v_1,\\dots,v_k\\} = \\{\\, c_1v_1+\\cdots+c_kv_k : c_1,\\dots,c_k \\in \\mathbb{R} \\,\\}",
+      "meaning": "계수를 모든 실수로 바꿔 가며 만든 일차결합 전체의 집합",
+      "variables": [
+        {
+          "symbol": "c_i",
+          "meaning": "자유롭게 고를 수 있는 실수 계수"
+        }
+      ],
+      "conditions": [],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "span{v1, ..., vk} = { c1v1 + ... + ckvk : c1, ..., ck ∈ R }"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "F3",
+      "concept_id": "C3",
+      "latex": "c_1v_1+\\cdots+c_kv_k = 0 \\;\\Rightarrow\\; c_1=\\cdots=c_k=0",
+      "meaning": "영벡터를 만드는 일차결합은 모든 계수가 0인 것밖에 없다",
+      "variables": [
+        {
+          "symbol": "0",
+          "meaning": "영벡터"
+        }
+      ],
+      "conditions": [
+        "이 함의가 성립하면 일차독립, 성립하지 않으면 일차종속"
+      ],
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#004",
+          "quote": "c1v1 + ... + ckvk = 0 이면 c1 = ... = ck = 0 일 때,"
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "theorems": [
+    {
+      "id": "T1",
+      "concept_ids": [
+        "C2"
+      ],
+      "name": "span은 부분공간",
+      "statement": "span{v1, ..., vk}는 V의 부분공간이다.",
+      "hypotheses": [
+        "v1, ..., vk ∈ V"
+      ],
+      "conclusion": "span{v1, ..., vk}는 V의 부분공간",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "span{v1, ..., vk} 는 V의 부분공간이다."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "T2",
+      "concept_ids": [
+        "C3",
+        "C1"
+      ],
+      "name": "일차종속의 동치 조건",
+      "statement": "v1, ..., vk가 일차종속이다 ⇔ 어떤 vj가 나머지 벡터들의 일차결합으로 표현된다.",
+      "hypotheses": [
+        "v1, ..., vk ∈ V"
+      ],
+      "conclusion": "일차종속과 '한 벡터가 나머지로 표현됨'은 동치",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#005",
+          "quote": "어떤 vj 가 나머지 벡터들의 일차결합으로 표현된다."
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "examples": [
+    {
+      "id": "E1",
+      "concept_ids": [
+        "C2"
+      ],
+      "title": "R^2를 생성하는 두 벡터",
+      "content": "R^2에서 span{(1,0), (0,1)} = R^2",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "span{(1,0), (0,1)} = R^2"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "E2",
+      "concept_ids": [
+        "C3"
+      ],
+      "title": "일차종속인 두 벡터",
+      "content": "(1,2), (2,4)는 일차종속: 2(1,2) - (2,4) = 0",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#005",
+          "quote": "2(1,2) - (2,4) = 0"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "E3",
+      "concept_ids": [
+        "C3"
+      ],
+      "title": "일차독립인 두 벡터",
+      "content": "(1,0), (0,1)은 일차독립",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#005",
+          "quote": "예2) (1,0), (0,1) 은 일차독립"
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "professor_emphasis": [
+    {
+      "id": "P1",
+      "concept_ids": [
+        "C3"
+      ],
+      "kind": "emphasis",
+      "content": "★ 중요: 자명한 해(trivial solution)만 존재하는가?",
+      "attribution": "professor_material",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#004",
+          "quote": "★ 중요: 자명한 해(trivial solution)만 존재하는가?"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "P2",
+      "concept_ids": [
+        "C2"
+      ],
+      "kind": "explanation",
+      "content": "span = 만들 수 있는 것 전부. \"재료로 만들 수 있는 모든 벡터\"",
+      "attribution": "professor_material",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "\"재료로 만들 수 있는 모든 벡터\""
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "P3",
+      "concept_ids": [
+        "C3",
+        "C2"
+      ],
+      "kind": "explanation",
+      "content": "일차독립 = 쓸데없는 벡터가 없다. 하나라도 빼면 span이 줄어든다.",
+      "attribution": "professor_material",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "일차독립 = 쓸데없는 벡터가 없다. 하나라도 빼면 span이 줄어든다."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "P4",
+      "concept_ids": [
+        "C3"
+      ],
+      "kind": "warning",
+      "content": "주의! 영벡터가 포함되면 항상 일차종속. 1·0 = 0 이니까.",
+      "attribution": "professor_material",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "주의! 영벡터가 포함되면 항상 일차종속."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "P5",
+      "concept_ids": [
+        "C3"
+      ],
+      "kind": "emphasis",
+      "content": "시험에 자주 나옴: 일차독립 판정 = 동차연립방정식의 해가 자명해뿐인지 확인",
+      "attribution": "professor_material",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "시험에 자주 나옴: 일차독립 판정 = 동차연립방정식의 해가 자명해뿐인지 확인"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "P6",
+      "concept_ids": [
+        "C4",
+        "C2",
+        "C3"
+      ],
+      "kind": "explanation",
+      "content": "다음 시간에 기저(basis)를 다루며, span과 일차독립 둘 다 필요하다.",
+      "attribution": "user_reported",
+      "status": "observed",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "chunk_id": "mine#001",
+          "quote": "span이랑 일차독립 둘 다 필요하다고."
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "relationships": [
+    {
+      "id": "R1",
+      "from_concept": "C1",
+      "to_concept": "C2",
+      "type": "prerequisite_of",
+      "description": "span은 일차결합들의 집합으로 정의된다.",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#003",
+          "quote": "v1, ..., vk 의 모든 일차결합의 집합."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "R2",
+      "from_concept": "C1",
+      "to_concept": "C3",
+      "type": "prerequisite_of",
+      "description": "일차독립은 '영벡터가 되는 일차결합'의 계수로 정의된다.",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "slides#004",
+          "quote": "c1v1 + ... + ckvk = 0 이면 c1 = ... = ck = 0 일 때,"
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "R3",
+      "from_concept": "C3",
+      "to_concept": "C2",
+      "type": "uses",
+      "description": "일차독립이면 어느 벡터를 빼도 span이 줄어든다(판서 설명).",
+      "status": "observed",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "하나라도 빼면 span이 줄어든다."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "R4",
+      "from_concept": "C2",
+      "to_concept": "C4",
+      "type": "prerequisite_of",
+      "description": "기저를 다루려면 span이 필요하다(사용자 필기).",
+      "status": "observed",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "chunk_id": "mine#001",
+          "quote": "span이랑 일차독립 둘 다 필요하다고."
+        }
+      ],
+      "rationale": ""
+    },
+    {
+      "id": "R5",
+      "from_concept": "C3",
+      "to_concept": "C4",
+      "type": "prerequisite_of",
+      "description": "기저를 다루려면 일차독립이 필요하다(사용자 필기).",
+      "status": "observed",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "chunk_id": "mine#001",
+          "quote": "span이랑 일차독립 둘 다 필요하다고."
+        }
+      ],
+      "rationale": ""
+    }
+  ],
+  "uncertainties": [
+    {
+      "id": "U1",
+      "concept_ids": [
+        "C3"
+      ],
+      "question": "세 벡터가 서로 평행하지 않으면 일차독립인가?",
+      "reason": "사용자 필기에 질문으로만 남아 있고, 해당 수업 내용이 필기에서 빠져 있다.",
+      "evidence": [
+        {
+          "chunk_id": "mine#001",
+          "quote": "세 벡터가 서로 평행하지 않으면 독립?? → 잘 모르겠음."
+        }
+      ]
+    },
+    {
+      "id": "U2",
+      "concept_ids": [
+        "C3"
+      ],
+      "question": "판서의 '1·0 = 0 이니까'가 정확히 어떤 논리를 가리키는가?",
+      "reason": "영벡터의 계수를 1로 두면 자명하지 않은 해가 생긴다는 뜻으로 보이지만, 판서에는 이유가 한 줄로만 적혀 있다.",
+      "evidence": [
+        {
+          "chunk_id": "prof#001",
+          "quote": "1·0 = 0 이니까."
+        }
+      ]
+    },
+    {
+      "id": "U3",
+      "concept_ids": [
+        "C4"
+      ],
+      "question": "기저의 정확한 정의",
+      "reason": "이번 자료에는 기저가 다음 강의 주제로만 언급되고 정의는 없다.",
+      "evidence": []
+    }
+  ]
+}

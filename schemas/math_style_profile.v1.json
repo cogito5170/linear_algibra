@@ -1,0 +1,85 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_style_profile/1"
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conceptual_understanding": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW_MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "mathematical_formalism": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW_MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "proof_detail": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW_MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "terminology_complexity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW_MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "intuition": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW_MEDIUM",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "preferences": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "avoid": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "language",
+    "conceptual_understanding",
+    "mathematical_formalism",
+    "proof_detail",
+    "terminology_complexity",
+    "intuition",
+    "preferences",
+    "avoid"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_style_profile:v1",
+  "title": "math_style_profile/1"
+}

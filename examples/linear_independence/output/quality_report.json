@@ -1,0 +1,294 @@
+{
+  "schema": "math_quality_report/1",
+  "passed": true,
+  "checks": [
+    {
+      "check_id": "SF1.professor_attribution",
+      "category": "source_fidelity",
+      "severity": "error",
+      "passed": true,
+      "message": "C2.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "targets": [
+        "C2.professor"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "SF1.professor_attribution",
+      "category": "source_fidelity",
+      "severity": "error",
+      "passed": true,
+      "message": "C3.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "targets": [
+        "C3.professor"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "SF2.supplementary_formula_label",
+      "category": "source_fidelity",
+      "severity": "warning",
+      "passed": true,
+      "message": "C3.formulas: 교안에 없는 보충 수식은 '보충'이라고 표시해야 함",
+      "targets": [
+        "C3.formulas"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "SF1.professor_attribution",
+      "category": "source_fidelity",
+      "severity": "error",
+      "passed": true,
+      "message": "C4.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "targets": [
+        "C4.professor"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "SF3.uncertainties_surfaced",
+      "category": "source_fidelity",
+      "severity": "warning",
+      "passed": true,
+      "message": "자료의 불확실한 부분이 노트에 드러나야 함",
+      "targets": [],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC1.core_depth",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C2: 핵심 개념은 depth=full",
+      "targets": [
+        "C2"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.core_sections",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C2: 핵심 개념에는 한 줄 직관과 핵심 개념 섹션이 필요",
+      "targets": [
+        "C2"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC1.core_depth",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C3: 핵심 개념은 depth=full",
+      "targets": [
+        "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.core_sections",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C3: 핵심 개념에는 한 줄 직관과 핵심 개념 섹션이 필요",
+      "targets": [
+        "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC3.all_concepts_present",
+      "category": "conceptual_clarity",
+      "severity": "warning",
+      "passed": true,
+      "message": "모든 개념이 노트에 등장해야 함",
+      "targets": [],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN2.meaning_before_formula",
+      "category": "intuition",
+      "severity": "error",
+      "passed": true,
+      "message": "C1: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
+      "targets": [
+        "C1.formulas"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN1.why_present",
+      "category": "intuition",
+      "severity": "error",
+      "passed": true,
+      "message": "C2: '왜 배우는가?'가 있어야 함",
+      "targets": [
+        "C2"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN2.meaning_before_formula",
+      "category": "intuition",
+      "severity": "error",
+      "passed": true,
+      "message": "C2: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
+      "targets": [
+        "C2.formulas"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN3.inferred_why_marked",
+      "category": "source_fidelity",
+      "severity": "warning",
+      "passed": true,
+      "message": "C2.why: 자료에 없는 동기를 observed로 표시하면 안 됨",
+      "targets": [
+        "C2.why"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN1.why_present",
+      "category": "intuition",
+      "severity": "error",
+      "passed": true,
+      "message": "C3: '왜 배우는가?'가 있어야 함",
+      "targets": [
+        "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN2.meaning_before_formula",
+      "category": "intuition",
+      "severity": "error",
+      "passed": true,
+      "message": "C3: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
+      "targets": [
+        "C3.formulas"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "IN3.inferred_why_marked",
+      "category": "source_fidelity",
+      "severity": "warning",
+      "passed": true,
+      "message": "C3.why: 자료에 없는 동기를 observed로 표시하면 안 됨",
+      "targets": [
+        "C3.why"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "LG1.prerequisite_order",
+      "category": "logicality",
+      "severity": "error",
+      "passed": true,
+      "message": "선수 개념이 먼저 설명되어야 함",
+      "targets": [],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "LG2.follows_learning_flow",
+      "category": "logicality",
+      "severity": "warning",
+      "passed": true,
+      "message": "노트 순서가 Concept Map의 learning_flow와 다름",
+      "targets": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR1.sentence_length",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C1: 평균 문장 길이 25자 (권장 90자 이하)",
+      "targets": [
+        "C1"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR2.brief_is_brief",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C1: 보조 개념에 섹션이 4개 (과도한 분할)",
+      "targets": [
+        "C1"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR1.sentence_length",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C2: 평균 문장 길이 28자 (권장 90자 이하)",
+      "targets": [
+        "C2"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR1.sentence_length",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C3: 평균 문장 길이 32자 (권장 90자 이하)",
+      "targets": [
+        "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR1.sentence_length",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C4: 평균 문장 길이 33자 (권장 90자 이하)",
+      "targets": [
+        "C4"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR2.brief_is_brief",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "C4: 보조 개념에 섹션이 4개 (과도한 분할)",
+      "targets": [
+        "C4"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "RV.user_readability",
+      "category": "user_readability",
+      "severity": "info",
+      "passed": true,
+      "message": "C3의 '직관적으로 이해하기' 섹션이 다른 섹션보다 길다. → 정리(T2) 인용 부분을 짧게 줄이면 흐름이 더 가벼워진다.",
+      "targets": [
+        "C3.intuition"
+      ],
+      "origin": "reviewer"
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 1
+  }
+}

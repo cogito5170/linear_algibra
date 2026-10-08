@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "math-study-agent"
+version = "0.1.0"
+description = "Multi-agent system that turns lecture slides and professor notes into intuitive, conceptual study notes."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "jsonschema>=4.18",
+]
+
+[project.optional-dependencies]
+llm = ["anthropic"]
+pdf = ["pdfplumber"]
+dev = ["pytest"]
+
+[project.scripts]
+math-study = "math_study_agent.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["math_study_agent*"]
+
+[tool.setuptools.package-data]
+math_study_agent = ["prompts/*.md"]

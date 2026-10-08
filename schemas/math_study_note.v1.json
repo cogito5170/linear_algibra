@@ -1,0 +1,148 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_study_note/1"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "big_picture": {
+      "type": "string",
+      "description": "이번 강의 전체가 무엇을 하려는지 몇 문장으로",
+      "minLength": 1
+    },
+    "concept_order": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^C\\d+$"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "concept_id": {
+            "type": "string",
+            "pattern": "^C\\d+$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "depth": {
+            "type": "string",
+            "enum": [
+              "full",
+              "brief"
+            ],
+            "description": "핵심 개념은 full, 보조 개념은 brief"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "one_line",
+                    "why",
+                    "core",
+                    "intuition",
+                    "relations",
+                    "formulas",
+                    "example",
+                    "professor",
+                    "pitfalls",
+                    "previous_link",
+                    "review"
+                  ]
+                },
+                "body_markdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "근거 id (P*, F*, D*, E*, T*, C*). professor 섹션은 P*가 필수"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "observed",
+                    "inferred",
+                    "uncertain",
+                    "mixed"
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "body_markdown",
+                "refs",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "concept_id",
+          "title",
+          "depth",
+          "sections"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "question",
+          "reason",
+          "refs"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "title",
+    "big_picture",
+    "concept_order",
+    "entries",
+    "open_questions"
+  ],
+  "additionalProperties": false,
+  "description": "Agent 4(Note Editor)의 출력. Markdown은 Orchestrator가 이 구조로부터 렌더링한다.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_study_note:v1",
+  "title": "math_study_note/1"
+}

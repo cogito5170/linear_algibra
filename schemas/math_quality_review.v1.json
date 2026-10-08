@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_quality_review/1"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "schema",
+              "source_fidelity",
+              "conceptual_clarity",
+              "intuition",
+              "logicality",
+              "mathematical_correctness",
+              "user_readability"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "concept id 또는 'C1.formulas' 같은 섹션 경로"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "severity",
+          "message",
+          "targets",
+          "suggestion"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "overall_comment": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "findings",
+    "overall_comment"
+  ],
+  "additionalProperties": false,
+  "description": "LLM 기반 품질 검토자(수학적 정확성, 논리성, 가독성)의 출력",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_quality_review:v1",
+  "title": "math_quality_review/1"
+}

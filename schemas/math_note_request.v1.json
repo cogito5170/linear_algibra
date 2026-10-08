@@ -1,0 +1,1903 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_note_request/1"
+    },
+    "title": {
+      "type": "string"
+    },
+    "style_profile": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "math_style_profile/1"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "conceptual_understanding": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "LOW_MEDIUM",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "mathematical_formalism": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "LOW_MEDIUM",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "proof_detail": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "LOW_MEDIUM",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "terminology_complexity": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "LOW_MEDIUM",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "intuition": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "LOW_MEDIUM",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "preferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "language",
+        "conceptual_understanding",
+        "mathematical_formalism",
+        "proof_detail",
+        "terminology_complexity",
+        "intuition",
+        "preferences",
+        "avoid"
+      ],
+      "additionalProperties": false
+    },
+    "concept_map": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "math_concept_map/1"
+        },
+        "concepts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "core",
+                  "supporting",
+                  "prerequisite",
+                  "application"
+                ]
+              },
+              "what": {
+                "type": "string",
+                "description": "이 개념은 무엇인가",
+                "minLength": 1
+              },
+              "why_needed": {
+                "type": "string",
+                "description": "왜 필요한가 (어떤 문제를 해결하려고 등장했나)",
+                "minLength": 1
+              },
+              "why_needed_status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "why_needed가 자료에 있으면 observed, 구조로부터 추론했으면 inferred"
+              },
+              "intuition": {
+                "type": "string",
+                "description": "한 줄 직관",
+                "minLength": 1
+              },
+              "prerequisites": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^C\\d+$"
+                }
+              },
+              "leads_to": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^C\\d+$"
+                }
+              },
+              "analysis_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "근거가 된 analysis 항목 id (D1, F2, P1 ...)"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              },
+              "confidence": {
+                "type": "number",
+                "description": "0~1 사이 확신도",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "chunk_id": {
+                      "type": "string",
+                      "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                      "minLength": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "chunk_id",
+                    "quote"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+              },
+              "rationale": {
+                "type": "string",
+                "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "role",
+              "what",
+              "why_needed",
+              "why_needed_status",
+              "intuition",
+              "prerequisites",
+              "leads_to",
+              "analysis_refs",
+              "status",
+              "confidence",
+              "evidence",
+              "rationale"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "requires",
+                  "motivates",
+                  "generalizes",
+                  "special_case_of",
+                  "uses",
+                  "contrasts_with"
+                ]
+              },
+              "explanation": {
+                "type": "string",
+                "description": "from이 to에 왜/어떻게 필요한지",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              },
+              "confidence": {
+                "type": "number",
+                "description": "0~1 사이 확신도",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "chunk_id": {
+                      "type": "string",
+                      "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                      "minLength": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "chunk_id",
+                    "quote"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+              },
+              "rationale": {
+                "type": "string",
+                "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "kind",
+              "explanation",
+              "status",
+              "confidence",
+              "evidence",
+              "rationale"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "learning_flow": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "concept_id": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "transition": {
+                "type": "string",
+                "description": "이전 단계에서 이 개념으로 넘어오는 자연스러운 연결 문장",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              },
+              "rationale": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "step",
+              "concept_id",
+              "transition",
+              "status",
+              "rationale"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "core_concepts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^C\\d+$"
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^K\\d+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "why_needed": {
+                "type": "string",
+                "minLength": 1
+              },
+              "needed_for": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^C\\d+$"
+                }
+              },
+              "covered_in_material": {
+                "type": "boolean",
+                "description": "이번 자료 안에서 다뤄지는가"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              },
+              "rationale": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "why_needed",
+              "needed_for",
+              "covered_in_material",
+              "status",
+              "rationale"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "concepts",
+        "dependencies",
+        "learning_flow",
+        "core_concepts",
+        "prerequisites"
+      ],
+      "additionalProperties": false,
+      "description": "Agent 2(Concept Mapper)의 출력"
+    },
+    "lesson": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "math_intuition_lesson/1"
+        },
+        "lessons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "concept_id": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "one_line_intuition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "why_needed": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "observed",
+                      "inferred",
+                      "uncertain"
+                    ],
+                    "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                  }
+                },
+                "required": [
+                  "text",
+                  "status"
+                ],
+                "additionalProperties": false
+              },
+              "meaning": {
+                "type": "string",
+                "description": "무엇을 의미하는가 (수식 없이)",
+                "minLength": 1
+              },
+              "intuition": {
+                "type": "object",
+                "properties": {
+                  "intuitive": {
+                    "type": "string",
+                    "description": "직관적으로는: ...",
+                    "minLength": 1
+                  },
+                  "rigorous": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "엄밀하게는: ... (비유/직관이 단순화한 부분을 바로잡음)",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "analogy_caveat": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "비유가 성립하지 않는 지점",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "intuitive",
+                  "rigorous",
+                  "analogy_caveat"
+                ],
+                "additionalProperties": false
+              },
+              "connections": {
+                "type": "object",
+                "properties": {
+                  "from_previous": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "to_next": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "related": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "concept_id": {
+                          "type": "string",
+                          "pattern": "^C\\d+$"
+                        },
+                        "relation": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "concept_id",
+                        "relation"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "from_previous",
+                  "to_next",
+                  "related"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "setup": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "walkthrough": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "takeaway": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "example_ref": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^E\\d+$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "setup",
+                      "walkthrough",
+                      "takeaway",
+                      "example_ref"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "formulas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "formula_ref": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^F\\d+$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "type": "string",
+                      "enum": [
+                        "material",
+                        "supplementary"
+                      ],
+                      "description": "supplementary: 교안에 없는 보충 수식"
+                    },
+                    "latex": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "plain_meaning": {
+                      "type": "string",
+                      "description": "수식이 말하는 관계를 한 문장으로",
+                      "minLength": 1
+                    },
+                    "parts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "symbol": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "meaning": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "symbol",
+                          "meaning"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "formula_ref",
+                    "origin",
+                    "latex",
+                    "plain_meaning",
+                    "parts"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "rigorous_note": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "필요한 경우에만: 조건, 정의역, 필요/충분조건 등",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "professor_points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "emphasis_ref": {
+                      "type": "string",
+                      "pattern": "^P\\d+$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "emphasis",
+                        "explanation",
+                        "warning"
+                      ]
+                    },
+                    "paraphrase": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "emphasis_ref",
+                    "kind",
+                    "paraphrase"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "pitfalls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "basis_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "basis_refs",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "review_points": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "epistemic_notes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "concept_id",
+              "name",
+              "one_line_intuition",
+              "why_needed",
+              "meaning",
+              "intuition",
+              "connections",
+              "example",
+              "formulas",
+              "rigorous_note",
+              "professor_points",
+              "pitfalls",
+              "review_points",
+              "epistemic_notes"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "lessons"
+      ],
+      "additionalProperties": false,
+      "description": "Agent 3(Intuition Teacher)의 출력"
+    },
+    "learning_contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schema": {
+            "type": "string",
+            "const": "math_learning_context/2"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "material_id": {
+                "type": "string"
+              },
+              "page": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "section": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "material_id",
+              "page",
+              "section"
+            ],
+            "additionalProperties": false
+          },
+          "concept": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^C\\d+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "definitions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^D\\d+$"
+                    },
+                    "concept_id": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "term": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "statement": {
+                      "type": "string",
+                      "description": "정의 문장. 조건/정의역을 빠뜨리지 않는다.",
+                      "minLength": 1
+                    },
+                    "conditions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "정의가 성립하기 위한 조건, domain 등"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_id",
+                    "term",
+                    "statement",
+                    "conditions",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "formulas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^F\\d+$"
+                    },
+                    "concept_id": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "latex": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "meaning": {
+                      "type": "string",
+                      "description": "수식이 표현하는 관계를 말로",
+                      "minLength": 1
+                    },
+                    "variables": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "symbol": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "meaning": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "symbol",
+                          "meaning"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "conditions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_id",
+                    "latex",
+                    "meaning",
+                    "variables",
+                    "conditions",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "examples": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^E\\d+$"
+                    },
+                    "concept_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^C\\d+$"
+                      }
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_ids",
+                    "title",
+                    "content",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "relationships": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^R\\d+$"
+                    },
+                    "from_concept": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "to_concept": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "prerequisite_of",
+                        "motivates",
+                        "generalizes",
+                        "special_case_of",
+                        "uses",
+                        "equivalent_to",
+                        "contrasts_with",
+                        "leads_to"
+                      ]
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "from_concept",
+                    "to_concept",
+                    "type",
+                    "description",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "theorems": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "concept_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^C\\d+$"
+                      }
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "statement": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "hypotheses": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "conclusion": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_ids",
+                    "name",
+                    "statement",
+                    "hypotheses",
+                    "conclusion",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "definitions",
+              "formulas",
+              "examples",
+              "relationships",
+              "theorems"
+            ],
+            "additionalProperties": false
+          },
+          "professor_context": {
+            "type": "object",
+            "properties": {
+              "emphasis": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^P\\d+$"
+                    },
+                    "concept_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^C\\d+$"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "emphasis",
+                        "explanation",
+                        "warning"
+                      ]
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "자료에 적힌 교수님의 강조/설명/주의. 원문에 없는 말을 만들지 않는다.",
+                      "minLength": 1
+                    },
+                    "attribution": {
+                      "type": "string",
+                      "enum": [
+                        "professor_material",
+                        "user_reported"
+                      ],
+                      "description": "professor_material: 교수님 자료에 직접 있음 / user_reported: 사용자 필기에 '교수님이 ~라고 함'처럼 기록됨"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_ids",
+                    "kind",
+                    "content",
+                    "attribution",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "explanation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^P\\d+$"
+                    },
+                    "concept_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^C\\d+$"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "emphasis",
+                        "explanation",
+                        "warning"
+                      ]
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "자료에 적힌 교수님의 강조/설명/주의. 원문에 없는 말을 만들지 않는다.",
+                      "minLength": 1
+                    },
+                    "attribution": {
+                      "type": "string",
+                      "enum": [
+                        "professor_material",
+                        "user_reported"
+                      ],
+                      "description": "professor_material: 교수님 자료에 직접 있음 / user_reported: 사용자 필기에 '교수님이 ~라고 함'처럼 기록됨"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_ids",
+                    "kind",
+                    "content",
+                    "attribution",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^P\\d+$"
+                    },
+                    "concept_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^C\\d+$"
+                      }
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "emphasis",
+                        "explanation",
+                        "warning"
+                      ]
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "자료에 적힌 교수님의 강조/설명/주의. 원문에 없는 말을 만들지 않는다.",
+                      "minLength": 1
+                    },
+                    "attribution": {
+                      "type": "string",
+                      "enum": [
+                        "professor_material",
+                        "user_reported"
+                      ],
+                      "description": "professor_material: 교수님 자료에 직접 있음 / user_reported: 사용자 필기에 '교수님이 ~라고 함'처럼 기록됨"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "observed",
+                        "inferred",
+                        "uncertain"
+                      ],
+                      "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "description": "0~1 사이 확신도",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chunk_id": {
+                            "type": "string",
+                            "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                            "minLength": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "chunk_id",
+                          "quote"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "description": "observed 항목은 최소 1개의 원문 인용이 필요"
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "description": "inferred/uncertain인 이유 또는 추론 근거. observed면 빈 문자열 가능"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "concept_ids",
+                    "kind",
+                    "content",
+                    "attribution",
+                    "status",
+                    "confidence",
+                    "evidence",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "emphasis",
+              "explanation",
+              "warnings"
+            ],
+            "additionalProperties": false
+          },
+          "interpretation": {
+            "type": "object",
+            "properties": {
+              "why": {
+                "type": "string"
+              },
+              "intuition": {
+                "type": "string"
+              },
+              "conceptual_relation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "concept_id": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "relation": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "concept_id",
+                    "relation",
+                    "description"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "why",
+              "intuition",
+              "conceptual_relation"
+            ],
+            "additionalProperties": false
+          },
+          "epistemic_status": {
+            "type": "object",
+            "properties": {
+              "observed": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "항목 id 또는 'interpretation.why' 같은 필드 경로"
+              },
+              "inferred": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "항목 id 또는 'interpretation.why' 같은 필드 경로"
+              },
+              "uncertain": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "항목 id 또는 'interpretation.why' 같은 필드 경로"
+              }
+            },
+            "required": [
+              "observed",
+              "inferred",
+              "uncertain"
+            ],
+            "additionalProperties": false
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "chunk_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "material_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "page": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "section": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "chunk_id",
+                "material_id",
+                "page",
+                "section"
+              ],
+              "additionalProperties": false
+            },
+            "description": "이 개념의 모든 근거 위치 (v2 추가)"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "core",
+              "supporting",
+              "prerequisite",
+              "application"
+            ]
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^C\\d+$"
+            }
+          },
+          "leads_to": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^C\\d+$"
+            }
+          },
+          "open_questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^U\\d+$"
+                },
+                "concept_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^C\\d+$"
+                  }
+                },
+                "question": {
+                  "type": "string",
+                  "description": "무엇이 불명확하거나 빠져 있는가",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "chunk_id": {
+                        "type": "string",
+                        "description": "인용한 source chunk의 id (입력 bundle에 존재해야 함)",
+                        "minLength": 1
+                      },
+                      "quote": {
+                        "type": "string",
+                        "description": "chunk 원문에서 그대로 복사한 짧은 인용. 바꿔 쓰지 않는다.",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "chunk_id",
+                      "quote"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "concept_ids",
+                "question",
+                "reason",
+                "evidence"
+              ],
+              "additionalProperties": false
+            },
+            "description": "이 개념과 관련된 불확실성 (v2 추가)"
+          }
+        },
+        "required": [
+          "schema",
+          "source",
+          "concept",
+          "content",
+          "professor_context",
+          "interpretation",
+          "epistemic_status",
+          "sources",
+          "role",
+          "prerequisites",
+          "leads_to",
+          "open_questions"
+        ],
+        "additionalProperties": false,
+        "description": "math_learning_context/1의 하위 호환 확장: theorems, sources, role, prerequisites, leads_to, open_questions 추가"
+      }
+    },
+    "revision_feedback": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "check_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "check_id",
+          "message",
+          "targets"
+        ],
+        "additionalProperties": false
+      },
+      "description": "이전 초안에 대한 품질 검사 결과. 비어 있으면 첫 작성"
+    }
+  },
+  "required": [
+    "schema",
+    "title",
+    "style_profile",
+    "concept_map",
+    "lesson",
+    "learning_contexts",
+    "revision_feedback"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_note_request:v1",
+  "title": "math_note_request/1"
+}

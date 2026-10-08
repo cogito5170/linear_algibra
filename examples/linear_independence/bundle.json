@@ -1,0 +1,73 @@
+{
+  "schema": "math_material_bundle/1",
+  "bundle_id": "la-lec03",
+  "title": "3강. 일차결합, 생성(Span), 일차독립",
+  "sources": [
+    {
+      "material_id": "slides",
+      "kind": "lecture_slides",
+      "author": "professor",
+      "title": "slides.md",
+      "chunks": [
+        {
+          "chunk_id": "slides#001",
+          "page": 1,
+          "section": "3강. 일차결합, 생성(Span), 일차독립",
+          "text": "# 3강. 일차결합, 생성(Span), 일차독립\n\n지난 시간: 벡터공간 V와 부분공간\n오늘의 질문: 몇 개의 벡터로 공간 전체를 표현할 수 있는가?"
+        },
+        {
+          "chunk_id": "slides#002",
+          "page": 2,
+          "section": "일차결합 (Linear Combination)",
+          "text": "# 일차결합 (Linear Combination)\n\n정의. 벡터 v1, ..., vk ∈ V 와 스칼라 c1, ..., ck 에 대해\nc1v1 + c2v2 + ... + ckvk\n를 v1, ..., vk 의 일차결합이라 한다."
+        },
+        {
+          "chunk_id": "slides#003",
+          "page": 3,
+          "section": "생성 (Span)",
+          "text": "# 생성 (Span)\n\n정의. span{v1, ..., vk} = { c1v1 + ... + ckvk : c1, ..., ck ∈ R }\nv1, ..., vk 의 모든 일차결합의 집합.\n\n성질. span{v1, ..., vk} 는 V의 부분공간이다.\n\n예) R^2 에서 span{(1,0), (0,1)} = R^2"
+        },
+        {
+          "chunk_id": "slides#004",
+          "page": 4,
+          "section": "일차독립 (Linear Independence)",
+          "text": "# 일차독립 (Linear Independence)\n\n정의. c1v1 + ... + ckvk = 0 이면 c1 = ... = ck = 0 일 때,\nv1, ..., vk 는 일차독립이라 한다.\n그렇지 않으면 일차종속이라 한다.\n\n★ 중요: 자명한 해(trivial solution)만 존재하는가?"
+        },
+        {
+          "chunk_id": "slides#005",
+          "page": 5,
+          "section": "예제",
+          "text": "# 예제\n\n예1) (1,2), (2,4) 는 일차종속: 2(1,2) - (2,4) = 0\n예2) (1,0), (0,1) 은 일차독립\n\n정리. v1, ..., vk 가 일차종속 ⇔ 어떤 vj 가 나머지 벡터들의 일차결합으로 표현된다."
+        }
+      ]
+    },
+    {
+      "material_id": "prof",
+      "kind": "professor_notes",
+      "author": "professor",
+      "title": "professor_notes.md",
+      "chunks": [
+        {
+          "chunk_id": "prof#001",
+          "page": null,
+          "section": "판서 메모 (교수님 필기)",
+          "text": "# 판서 메모 (교수님 필기)\n\nspan = 만들 수 있는 것 전부. \"재료로 만들 수 있는 모든 벡터\"\n\n일차독립 = 쓸데없는 벡터가 없다. 하나라도 빼면 span이 줄어든다.\n\n주의! 영벡터가 포함되면 항상 일차종속. 1·0 = 0 이니까.\n\n시험에 자주 나옴: 일차독립 판정 = 동차연립방정식의 해가 자명해뿐인지 확인"
+        }
+      ]
+    },
+    {
+      "material_id": "mine",
+      "kind": "user_notes",
+      "author": "user",
+      "title": "user_notes.md",
+      "chunks": [
+        {
+          "chunk_id": "mine#001",
+          "page": null,
+          "section": "내 필기",
+          "text": "# 내 필기\n\n교수님이 다음 시간에 기저(basis) 한다고 하심. span이랑 일차독립 둘 다 필요하다고.\n\n세 벡터가 서로 평행하지 않으면 독립?? → 잘 모르겠음. 수업 때 놓침"
+        }
+      ]
+    }
+  ]
+}

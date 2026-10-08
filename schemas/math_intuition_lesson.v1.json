@@ -1,0 +1,397 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_intuition_lesson/1"
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "concept_id": {
+            "type": "string",
+            "pattern": "^C\\d+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "one_line_intuition": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why_needed": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              }
+            },
+            "required": [
+              "text",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "meaning": {
+            "type": "string",
+            "description": "무엇을 의미하는가 (수식 없이)",
+            "minLength": 1
+          },
+          "intuition": {
+            "type": "object",
+            "properties": {
+              "intuitive": {
+                "type": "string",
+                "description": "직관적으로는: ...",
+                "minLength": 1
+              },
+              "rigorous": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "엄밀하게는: ... (비유/직관이 단순화한 부분을 바로잡음)",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "analogy_caveat": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "비유가 성립하지 않는 지점",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "intuitive",
+              "rigorous",
+              "analogy_caveat"
+            ],
+            "additionalProperties": false
+          },
+          "connections": {
+            "type": "object",
+            "properties": {
+              "from_previous": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "to_next": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "concept_id": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "relation": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "concept_id",
+                    "relation"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "from_previous",
+              "to_next",
+              "related"
+            ],
+            "additionalProperties": false
+          },
+          "example": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "setup": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "walkthrough": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "takeaway": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "example_ref": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^E\\d+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "title",
+                  "setup",
+                  "walkthrough",
+                  "takeaway",
+                  "example_ref"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formulas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "formula_ref": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^F\\d+$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "material",
+                    "supplementary"
+                  ],
+                  "description": "supplementary: 교안에 없는 보충 수식"
+                },
+                "latex": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "plain_meaning": {
+                  "type": "string",
+                  "description": "수식이 말하는 관계를 한 문장으로",
+                  "minLength": 1
+                },
+                "parts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "meaning": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "meaning"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "formula_ref",
+                "origin",
+                "latex",
+                "plain_meaning",
+                "parts"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "rigorous_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "필요한 경우에만: 조건, 정의역, 필요/충분조건 등",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "professor_points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "emphasis_ref": {
+                  "type": "string",
+                  "pattern": "^P\\d+$"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "emphasis",
+                    "explanation",
+                    "warning"
+                  ]
+                },
+                "paraphrase": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "emphasis_ref",
+                "kind",
+                "paraphrase"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pitfalls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "basis_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "observed",
+                    "inferred",
+                    "uncertain"
+                  ],
+                  "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                }
+              },
+              "required": [
+                "text",
+                "basis_refs",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "review_points": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "epistemic_notes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "observed",
+                    "inferred",
+                    "uncertain"
+                  ],
+                  "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                }
+              },
+              "required": [
+                "text",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "concept_id",
+          "name",
+          "one_line_intuition",
+          "why_needed",
+          "meaning",
+          "intuition",
+          "connections",
+          "example",
+          "formulas",
+          "rigorous_note",
+          "professor_points",
+          "pitfalls",
+          "review_points",
+          "epistemic_notes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "lessons"
+  ],
+  "additionalProperties": false,
+  "description": "Agent 3(Intuition Teacher)의 출력",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_intuition_lesson:v1",
+  "title": "math_intuition_lesson/1"
+}
