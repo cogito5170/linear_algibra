@@ -30,7 +30,7 @@
 | recipe | 계산 절차(단계 번호 목록) |
 | explanation | 핵심 설명 |
 | example | 예제. 풀이 과정은 가능하면 `figure`(row_reduction 등)로 |
-| figure | 그림 단독 (흐름도, 직선 그림 등) |
+| figure | 그림 단독 (흐름도, 직선 그림 등). 그림은 figure, example, recipe, explanation 블록에 붙일 수 있음 |
 | professor | 교수님 강조. 아래 참고 |
 | warning | 헷갈리기 쉬운 부분 |
 | intuition / why / connection | 직관, 왜 배우는가, 다른 개념과의 연결. **보조 설명이므로 핵심 블록 뒤에** |

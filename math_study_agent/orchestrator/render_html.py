@@ -145,16 +145,20 @@ th { background: var(--tint); }
 .fig { margin-top: 10px; }
 .fig-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 6px; }
 .fig-caption { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-.rr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px; overflow-x: auto; }
-.rr-step { display: grid; gap: 4px; justify-items: start; }
+.rr { display: grid; gap: 10px; overflow-x: auto; padding-bottom: 2px; }
+.rr-row { display: grid; grid-template-columns: 1.6em auto; align-items: center; justify-content: start; }
+.rr-step { display: grid; gap: 2px; justify-items: start; min-width: 0; }
 .rr-label { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); }
-.rr-arrow { font-size: 1.3rem; color: var(--muted); padding-inline: 2px; }
+.rr-arrow { font-size: 1.2rem; color: var(--muted); align-self: center; }
+.fig-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 12px; }
+.fig-grid .block { padding: 10px 12px; }
 .mat { display: grid; align-items: center; column-gap: 0; position: relative; padding-inline: 8px; font-variant-numeric: tabular-nums; }
 .mat::before, .mat::after { content: ""; position: absolute; top: 2px; bottom: 2px; width: 7px; border: 1.5px solid var(--ink); }
 .mat::before { left: 0; border-right: none; }
 .mat::after { right: 0; border-left: none; }
-.cell { min-width: 2.1em; height: 2.1em; display: grid; place-items: center; padding-inline: 4px; border-radius: 50%; font-size: 0.95rem; }
-.cell.pivot { background: var(--pivot); color: var(--pivot-ink); font-weight: 700; }
+.cell { min-width: 2.1em; height: 2.1em; display: grid; place-items: center; padding-inline: 4px; font-size: 0.95rem; }
+.cell .v { display: grid; place-items: center; min-width: 1.8em; height: 1.8em; }
+.cell.pivot .v { background: var(--pivot); color: var(--pivot-ink); font-weight: 700; border-radius: 50%; width: 1.8em; }
 .cell.eliminate { background: var(--elim); border-radius: 6px; }
 .cell.free { background: var(--free); border-radius: 0; }
 .cell.focus { outline: 2px solid var(--c2); border-radius: 6px; }
@@ -259,7 +263,7 @@ def _matrix_html(step: dict) -> str:
                 classes.append("free")
             if aug is not None and c == aug:
                 classes.append("aug")
-            cells.append(f'<div class="{" ".join(classes)}">{_math_cell(value)}</div>')
+            cells.append(f'<div class="{" ".join(classes)}"><span class="v">{_math_cell(value)}</span></div>')
     grid = f'<div class="mat" style="grid-template-columns: repeat({width}, auto)">{"".join(cells)}</div>'
     ops = step["row_ops"]
     if any(o.strip() for o in ops):
@@ -380,10 +384,9 @@ def render_figure(figure: dict, fid: str) -> str:
     if kind in ("row_reduction", "matrix"):
         items = []
         for i, step in enumerate(figure["steps"]):
-            if i:
-                items.append('<div class="rr-arrow" aria-hidden="true">⟶</div>')
+            arrow = '<div class="rr-arrow" aria-hidden="true">⇒</div>' if i else '<div class="rr-arrow"></div>'
             label = f'<div class="rr-label">{_e(step["label"])}</div>' if step["label"] else ""
-            items.append(f'<div class="rr-step">{label}{_matrix_html(step)}</div>')
+            items.append(f'<div class="rr-row">{arrow}<div class="rr-step">{label}{_matrix_html(step)}</div></div>')
         parts.append(f'<div class="rr">{"".join(items)}</div>')
     elif kind == "lines_2d":
         parts.append(_lines_svg(figure, fid))
@@ -459,7 +462,22 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
         out.append(f'<section class="concept" id="c-{_e(cid)}">')
         out.append(f'<div class="concept-head"><span class="num">{number}</span><h2>{_e(entry["title"])}</h2>{badge}</div>')
         support_started = False
-        for block in entry["blocks"]:
+        blocks = entry["blocks"]
+        i = 0
+        while i < len(blocks):
+            # Consecutive plain line plots sit side by side so the cases can be compared.
+            run = 0
+            while i + run < len(blocks) and _is_plot_block(blocks[i + run]):
+                run += 1
+            if run >= 2:
+                cells = "".join(
+                    f'<div class="block b-figure">{fig(b["figure"])}</div>' for b in blocks[i:i + run]
+                )
+                out.append(f'<div class="fig-grid">{cells}</div>')
+                i += run
+                continue
+            block = blocks[i]
+            i += 1
             kind = block["kind"]
             if kind in ("intuition", "why", "connection") and not support_started:
                 support_started = True
@@ -549,6 +567,11 @@ def render_html(note: dict, concept_map: dict, contexts: list[dict], *, quality_
     out.append(f"<script>{FLOW_JS}</script>")
     out.append(f'<script src="{MATHJAX}" async></script>')
     return "\n".join(out) + "\n"
+
+
+def _is_plot_block(block: dict) -> bool:
+    figure = block["figure"]
+    return block["kind"] == "figure" and not block["body_markdown"].strip() and figure is not None and figure["kind"] == "lines_2d"
 
 
 def _inline(text: str) -> str:

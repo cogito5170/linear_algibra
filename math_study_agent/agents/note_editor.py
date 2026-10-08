@@ -6,6 +6,9 @@ from ..figures import figure_issues
 from ..schemas.definitions import MAIN_BLOCK_KINDS, SUPPORT_BLOCK_KINDS
 from .base import Agent
 
+# Blocks that may carry a figure (a flowchart fits a recipe, a matrix fits an explanation).
+FIGURE_BLOCK_KINDS = ("figure", "example", "recipe", "explanation")
+
 
 def known_refs(payload: dict) -> set[str]:
     """Every id the note may cite: concepts, prerequisites and analysis items in the contexts."""
@@ -85,10 +88,10 @@ class NoteEditor(Agent):
                     issues.append(f"{at}: reconstruction is only allowed in professor blocks")
                 if block["kind"] == "proof" and block["proof_method"] is None:
                     issues.append(f"{at}: proof blocks need a proof_method")
-                if block["kind"] in ("figure", "example") and block["figure"] is not None:
+                if block["kind"] in FIGURE_BLOCK_KINDS and block["figure"] is not None:
                     issues += figure_issues(block["figure"], at)
                 elif block["figure"] is not None:
-                    issues.append(f"{at}: figures belong in figure or example blocks")
+                    issues.append(f"{at}: figures belong in {'/'.join(FIGURE_BLOCK_KINDS)} blocks")
                 if block["kind"] == "figure" and block["figure"] is None:
                     issues.append(f"{at}: figure block without figure data")
 
