@@ -1,35 +1,41 @@
 <title>3강. 일차결합, 생성(Span), 일차독립</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;600;700&family=Noto+Serif+KR:wght@600;800&display=swap">
 <style>
-/* Layout: one reading column like a textbook page; boxed blocks colored by role. */
+/* Layout: one reading column like a textbook page; boxed blocks colored by role.
+   Palette: near-black text on white, every box tinted by its role (no gray boxes). */
 :root {
-  --bg: #f6f7f9; --paper: #ffffff; --ink: #1c2230; --muted: #5d6676; --rule: #dde2ea; --tint: #eef1f6;
-  --accent: #2450b8;
-  --def: #2450b8; --def-bg: #eef3fd;
-  --thm: #6f3bb0; --thm-bg: #f4effb;
-  --rec: #17775a; --rec-bg: #ebf7f2;
-  --prof: #a35a07; --prof-bg: #fdf4e6;
-  --warn: #b5352a; --warn-bg: #fcefed;
-  --pivot: #2450b8; --pivot-ink: #ffffff; --elim: #d9f0e3; --free: #fff1cc;
-  --c1: #2450b8; --c2: #c2410c; --c3: #17775a;
+  --bg: #ffffff; --paper: #ffffff; --ink: #0f172a; --muted: #334155; --rule: #cbd5e1; --tint: #eef4ff;
+  --accent: #1d4ed8;
+  --def: #1d4ed8; --def-bg: #eaf1ff;
+  --thm: #6d28d9; --thm-bg: #f3ecff;
+  --rec: #047857; --rec-bg: #e6f7ef;
+  --prof: #92400e; --prof-bg: #fff4e0;
+  --warn: #b91c1c; --warn-bg: #feeceb;
+  --intu: #0b5f73; --intu-bg: #e3f5f9;
+  --why: #4338ca; --why-bg: #ecebff;
+  --conn: #0369a1; --conn-bg: #e5f2fb;
+  --pivot: #1d4ed8; --pivot-ink: #ffffff; --elim: #c9eeda; --free: #ffe8a3;
+  --c1: #1d4ed8; --c2: #c2410c; --c3: #047857;
   --font-display: "Noto Serif KR", "Apple SD Gothic Neo", serif;
   --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #11141b; --paper: #181c25; --ink: #e5e8ee; --muted: #9aa3b3; --rule: #2b3241; --tint: #202634;
-  --accent: #86a8ff;
-  --def: #86a8ff; --def-bg: #1a2338; --thm: #c4a1ff; --thm-bg: #241d36; --rec: #5ccfa3; --rec-bg: #15291f;
-  --prof: #f0aa55; --prof-bg: #2c2214; --warn: #ff8a7a; --warn-bg: #2e1a19;
-  --pivot: #86a8ff; --pivot-ink: #11141b; --elim: #1d3a2c; --free: #3a3016;
-  --c1: #86a8ff; --c2: #ff9a62; --c3: #5ccfa3; color-scheme: dark; } }
+  --bg: #0d1117; --paper: #151b26; --ink: #f3f6fb; --muted: #cdd5e1; --rule: #364152; --tint: #1b2536;
+  --accent: #93b4ff;
+  --def: #93b4ff; --def-bg: #172440; --thm: #cbb0ff; --thm-bg: #241a3d; --rec: #6ee0b4; --rec-bg: #10291f;
+  --prof: #ffbe6b; --prof-bg: #2e2210; --warn: #ff9b8f; --warn-bg: #301a1a;
+  --intu: #67d4e8; --intu-bg: #0f2a31; --why: #a5a8ff; --why-bg: #1c1c3d; --conn: #7cc4f2; --conn-bg: #12263a;
+  --pivot: #93b4ff; --pivot-ink: #0d1117; --elim: #1c4a35; --free: #4a3b12;
+  --c1: #93b4ff; --c2: #ffa36b; --c3: #6ee0b4; color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #11141b; --paper: #181c25; --ink: #e5e8ee; --muted: #9aa3b3; --rule: #2b3241; --tint: #202634;
-  --accent: #86a8ff;
-  --def: #86a8ff; --def-bg: #1a2338; --thm: #c4a1ff; --thm-bg: #241d36; --rec: #5ccfa3; --rec-bg: #15291f;
-  --prof: #f0aa55; --prof-bg: #2c2214; --warn: #ff8a7a; --warn-bg: #2e1a19;
-  --pivot: #86a8ff; --pivot-ink: #11141b; --elim: #1d3a2c; --free: #3a3016;
-  --c1: #86a8ff; --c2: #ff9a62; --c3: #5ccfa3; color-scheme: dark; }
+  --bg: #0d1117; --paper: #151b26; --ink: #f3f6fb; --muted: #cdd5e1; --rule: #364152; --tint: #1b2536;
+  --accent: #93b4ff;
+  --def: #93b4ff; --def-bg: #172440; --thm: #cbb0ff; --thm-bg: #241a3d; --rec: #6ee0b4; --rec-bg: #10291f;
+  --prof: #ffbe6b; --prof-bg: #2e2210; --warn: #ff9b8f; --warn-bg: #301a1a;
+  --intu: #67d4e8; --intu-bg: #0f2a31; --why: #a5a8ff; --why-bg: #1c1c3d; --conn: #7cc4f2; --conn-bg: #12263a;
+  --pivot: #93b4ff; --pivot-ink: #0d1117; --elim: #1c4a35; --free: #4a3b12;
+  --c1: #93b4ff; --c2: #ffa36b; --c3: #6ee0b4; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.75; }
 .page { max-width: 46rem; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; display: grid; gap: 28px; }
@@ -42,9 +48,9 @@ p { margin: 0; }
 ul, ol { margin: 0; padding-left: 1.4em; }
 li + li { margin-top: 0.25em; }
 code { font-family: var(--font-mono); font-size: 0.9em; background: var(--tint); padding: 0 4px; border-radius: 4px; }
-blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--rule); color: var(--muted); }
+blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--accent); color: var(--ink); background: var(--tint); border-radius: 0 6px 6px 0; }
 .eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.lede { color: var(--muted); }
+.lede { color: var(--ink); }
 .panel { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
 .panel h2 { font-size: 1.1rem; margin-bottom: 10px; }
 .objectives li::marker { color: var(--accent); }
@@ -62,20 +68,22 @@ blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--rule); c
 .concept-head .badge { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; border: 1px solid var(--accent); color: var(--accent); border-radius: 4px; padding: 0 6px; }
 .block { border-radius: 8px; padding: 14px 16px; min-width: 0; }
 .block-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.kind { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; font-weight: 500; }
+.kind { font-family: var(--font-body); font-size: 0.8rem; letter-spacing: 0.04em; font-weight: 700; }
 .block-title { font-weight: 700; }
-.tag { font-size: 0.72rem; border-radius: 999px; padding: 0 8px; background: var(--tint); color: var(--muted); }
+.tag { font-size: 0.74rem; border-radius: 999px; padding: 0 8px; background: var(--tint); color: var(--accent); font-weight: 600; }
 .b-definition { background: var(--def-bg); border-left: 4px solid var(--def); } .b-definition .kind { color: var(--def); }
 .b-theorem { background: var(--thm-bg); border-left: 4px solid var(--thm); } .b-theorem .kind { color: var(--thm); }
-.b-proof { background: var(--paper); border: 1px solid var(--rule); margin-left: 12px; } .b-proof .kind { color: var(--thm); }
+.b-proof { background: var(--paper); border: 1.5px solid var(--thm); border-style: dashed; margin-left: 12px; } .b-proof .kind { color: var(--thm); }
 .b-proof .qed { float: right; color: var(--thm); }
 .b-recipe { background: var(--rec-bg); border-left: 4px solid var(--rec); } .b-recipe .kind { color: var(--rec); }
-.b-explanation { background: transparent; padding-inline: 0; } .b-explanation .kind { color: var(--muted); }
-.b-example, .b-figure { background: var(--paper); border: 1px solid var(--rule); } .b-example .kind, .b-figure .kind { color: var(--ink); }
+.b-explanation { background: transparent; padding-inline: 0; } .b-explanation .kind { color: var(--accent); }
+.b-example, .b-figure { background: var(--paper); border: 1.5px solid var(--rule); } .b-example .kind, .b-figure .kind { color: var(--accent); }
 .b-professor { background: var(--prof-bg); border: 1px solid var(--prof); } .b-professor .kind { color: var(--prof); }
 .b-warning { background: var(--warn-bg); border-left: 4px solid var(--warn); } .b-warning .kind { color: var(--warn); }
-.b-intuition, .b-why, .b-connection { background: var(--tint); font-size: 0.95rem; } .b-intuition .kind, .b-why .kind, .b-connection .kind { color: var(--muted); }
-.support-label { font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.06em; margin-top: 6px; }
+.b-intuition { background: var(--intu-bg); border-left: 4px solid var(--intu); } .b-intuition .kind { color: var(--intu); }
+.b-why { background: var(--why-bg); border-left: 4px solid var(--why); } .b-why .kind { color: var(--why); }
+.b-connection { background: var(--conn-bg); border-left: 4px solid var(--conn); } .b-connection .kind { color: var(--conn); }
+.support-label { font-size: 0.85rem; color: var(--ink); font-weight: 700; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--rule); }
 .recon { margin-top: 12px; border-top: 1px dashed var(--prof); padding-top: 10px; }
 .recon .recon-label { font-size: 0.78rem; color: var(--prof); font-weight: 700; }
 .recon .recon-note { font-size: 0.75rem; color: var(--muted); }

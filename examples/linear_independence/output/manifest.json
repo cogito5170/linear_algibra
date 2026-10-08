@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-08T12:30:54.656026+00:00",
+  "started_at": "2026-10-08T13:42:33.344587+00:00",
   "bundle_id": "la-lec03",
   "stages": [
     {
@@ -10,7 +10,7 @@
     {
       "stage": "material_analyst",
       "status": "ok",
-      "seconds": 0.005,
+      "seconds": 0.006,
       "attempts": [
         {
           "attempt": 1,
@@ -30,7 +30,7 @@
     {
       "stage": "concept_mapper",
       "status": "ok",
-      "seconds": 0.007,
+      "seconds": 0.008,
       "attempts": [
         {
           "attempt": 1,
@@ -38,7 +38,7 @@
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.003
+          "seconds": 0.004
         }
       ]
     },
@@ -50,12 +50,12 @@
     {
       "stage": "learning_contexts",
       "status": "ok",
-      "seconds": 0.006
+      "seconds": 0.007
     },
     {
       "stage": "intuition_teacher",
       "status": "ok",
-      "seconds": 0.02,
+      "seconds": 0.016,
       "attempts": [
         {
           "attempt": 1,
@@ -63,14 +63,14 @@
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.005
+          "seconds": 0.007
         }
       ]
     },
     {
       "stage": "note_editor",
       "status": "ok",
-      "seconds": 0.02,
+      "seconds": 0.021,
       "attempts": [
         {
           "attempt": 1,
@@ -78,7 +78,7 @@
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.007
+          "seconds": 0.008
         }
       ]
     },
@@ -89,7 +89,7 @@
     }
   ],
   "status": "ok",
-  "finished_at": "2026-10-08T12:30:54.739773+00:00",
+  "finished_at": "2026-10-08T13:42:33.427696+00:00",
   "quality": {
     "errors": 0,
     "warnings": 0,
