@@ -663,6 +663,219 @@ QUALITY_REPORT_V1 = obj(
 )
 
 
+# ---------------------------------------------------------------------------
+# v2: textbook layout (proofs, figures, labeled reconstructions, exam prep)
+# ---------------------------------------------------------------------------
+
+FIGURE_KINDS = ["row_reduction", "matrix", "lines_2d", "flow"]
+HIGHLIGHT_ROLES = ["pivot", "eliminate", "free", "focus"]
+PROOF_METHODS = ["intuitive", "counterexample", "via_proposition", "direct"]
+DIFFICULTIES = ["basic", "standard", "advanced"]
+EXAM_TYPES = ["true_false", "short_answer", "computation", "proof", "concept"]
+BLOCK_KINDS = [
+    "definition",
+    "theorem",
+    "proof",
+    "recipe",
+    "explanation",
+    "example",
+    "figure",
+    "professor",
+    "warning",
+    "intuition",
+    "why",
+    "connection",
+]
+# Blocks that carry the main content of a concept. Supporting blocks
+# (intuition, why, connection) may only appear after the first of these.
+MAIN_BLOCK_KINDS = ["definition", "theorem", "recipe", "explanation"]
+SUPPORT_BLOCK_KINDS = ["intuition", "why", "connection"]
+
+
+def figure_schema() -> Schema:
+    """Data for a figure the renderer draws. Numbers, not pictures, so it can be checked."""
+    return obj(
+        {
+            "kind": enum(
+                FIGURE_KINDS,
+                "row_reduction: 행렬 단계들 / matrix: 행렬 하나 강조 / lines_2d: ax+by=c 직선들 / flow: 단계·판정 흐름도",
+            ),
+            "title": string(),
+            "caption": string(),
+            "steps": arr(
+                obj(
+                    {
+                        "matrix": arr(arr(string()), "행 단위 원소. 숫자, 분수 '-7/2', '*', LaTeX 기호 가능"),
+                        "augmented_col": nullable(integer("첨가행렬 세로선이 이 열 앞에 그어진다 (0부터)", minimum=0)),
+                        "row_ops": arr(string(), "이 단계를 만든 행연산, 행마다 LaTeX (예: 'R_2 - 2R_1'). 바뀌지 않은 행은 ''"),
+                        "highlight": arr(
+                            obj(
+                                {
+                                    "row": integer(minimum=0),
+                                    "col": integer(minimum=0),
+                                    "role": enum(HIGHLIGHT_ROLES),
+                                }
+                            )
+                        ),
+                        "label": string("단계 이름 (예: '전진단계 완료')"),
+                    }
+                ),
+                "row_reduction/matrix용",
+            ),
+            "lines": arr(
+                obj({"a": number(), "b": number(), "c": number(), "label": string()}),
+                "lines_2d용: ax + by = c",
+            ),
+            "nodes": arr(obj({"id": text(), "label": text()}), "flow용"),
+            "edges": arr(obj({"from": text(), "to": text(), "label": string()}), "flow용"),
+        }
+    )
+
+
+def proof_item() -> Schema:
+    return obj(
+        {
+            "theorem_ref": nullable(string(pattern=THEOREM_ID)),
+            "statement": text("증명할 명제"),
+            "method": enum(PROOF_METHODS, "intuitive: 직관적 논증 / counterexample: 반례 / via_proposition: 앞의 명제로부터 / direct: 직접 계산"),
+            "proof_markdown": text("엄밀성보다 이해를 우선한 증명. 단계마다 한 줄."),
+        }
+    )
+
+
+def exam_item() -> Schema:
+    return obj(
+        {
+            "type": enum(EXAM_TYPES),
+            "difficulty": enum(DIFFICULTIES),
+            "prompt_markdown": text(),
+            "answer_markdown": text(),
+            "solution_markdown": text(),
+            "why_likely": text("왜 시험에 나올 만한가 (근거: 강조 표시, 빈칸, 반복된 예제 등)"),
+            "basis_refs": arr(string()),
+        }
+    )
+
+
+def lesson_schema_v2() -> Schema:
+    schema = lesson_schema()
+    props = schema["properties"]
+    props["professor_points"] = arr(
+        obj(
+            {
+                "emphasis_ref": string(pattern=EMPHASIS_ID),
+                "kind": enum(["emphasis", "explanation", "warning"]),
+                "paraphrase": text("자료에 실제로 있는 강조 내용"),
+                "detail": text("이 강조가 왜 중요한지, 무엇을 정확히 알아야 하는지 자세히"),
+                "reconstruction": nullable(
+                    text("수업에서 교수님이 했을 법한 설명을 재구성한 것. 인용이 아니라 추정이며 렌더링 시 그렇게 표시된다")
+                ),
+            }
+        )
+    )
+    props["proofs"] = arr(proof_item())
+    props["figures"] = arr(figure_schema())
+    props["exam_items"] = arr(exam_item())
+    schema["required"] = list(props)
+    return schema
+
+
+INTUITION_LESSON_V2 = obj(
+    {"schema": const("math_intuition_lesson/2"), "lessons": arr(lesson_schema_v2())},
+    "Agent 3(Intuition Teacher)의 출력 v2: 증명, 교수님 설명 재구성(표시됨), 시각자료, 시험 대비 문항 추가",
+)
+
+NOTE_REQUEST_V2 = obj(
+    {
+        "schema": const("math_note_request/2"),
+        "title": string(),
+        "style_profile": STYLE_PROFILE_V1,
+        "concept_map": CONCEPT_MAP_V1,
+        "lesson": INTUITION_LESSON_V2,
+        "learning_contexts": arr(LEARNING_CONTEXT_V2),
+        "revision_feedback": arr(revision_item()),
+    }
+)
+
+
+def note_block() -> Schema:
+    return obj(
+        {
+            "kind": enum(BLOCK_KINDS),
+            "title": string("상자 제목 (예: '정의 1.2.3 기약 행사다리꼴')"),
+            "body_markdown": string(),
+            "refs": arr(string()),
+            "status": enum(EPISTEMIC_STATUSES + ["mixed"]),
+            "figure": nullable(figure_schema()),
+            "reconstruction": nullable(text("professor 블록 전용: 교수님 설명 재구성(추정)")),
+            "proof_method": nullable(enum(PROOF_METHODS)),
+        }
+    )
+
+
+STUDY_NOTE_V2 = obj(
+    {
+        "schema": const("math_study_note/2"),
+        "title": text(),
+        "objectives": arr(text(), "이 절을 마치면 할 수 있어야 하는 것 (동사로 시작)"),
+        "key_ideas": arr(text(), "맨 앞에 보여 줄 핵심 요약 3~7개"),
+        "big_picture": text(),
+        "concept_order": arr(string(pattern=CONCEPT_ID)),
+        "entries": arr(
+            obj(
+                {
+                    "concept_id": string(pattern=CONCEPT_ID),
+                    "title": text(),
+                    "depth": enum(["full", "brief"]),
+                    "blocks": arr(note_block()),
+                }
+            )
+        ),
+        "summary": arr(text(), "절 끝의 핵심 정리 (Review of the key ideas)"),
+        "exam": obj(
+            {
+                "true_false": arr(
+                    obj(
+                        {
+                            "statement_markdown": text(),
+                            "answer": boolean(),
+                            "explanation_markdown": text(),
+                            "refs": arr(string()),
+                        }
+                    )
+                ),
+                "problems": arr(
+                    obj(
+                        {
+                            "id": text(),
+                            "type": enum(EXAM_TYPES),
+                            "difficulty": enum(DIFFICULTIES),
+                            "prompt_markdown": text(),
+                            "answer_markdown": text(),
+                            "solution_markdown": text(),
+                            "why_likely": text(),
+                            "refs": arr(string()),
+                            "figure": nullable(figure_schema()),
+                        }
+                    )
+                ),
+            }
+        ),
+        "open_questions": arr(obj({"question": text(), "reason": text(), "refs": arr(string())})),
+    },
+    "Agent 4(Note Editor)의 출력 v2: 교재형 레이아웃. 렌더링은 Orchestrator가 한다.",
+)
+
+REVIEW_REQUEST_V2 = obj(
+    {
+        "schema": const("math_review_request/2"),
+        "analysis": MATERIAL_ANALYSIS_V1,
+        "concept_map": CONCEPT_MAP_V1,
+        "note": STUDY_NOTE_V2,
+    }
+)
+
+
 ALL_SCHEMAS: dict[str, Schema] = {
     "math_material_bundle/1": MATERIAL_BUNDLE_V1,
     "math_style_profile/1": STYLE_PROFILE_V1,
@@ -678,4 +891,8 @@ ALL_SCHEMAS: dict[str, Schema] = {
     "math_review_request/1": REVIEW_REQUEST_V1,
     "math_quality_review/1": QUALITY_REVIEW_V1,
     "math_quality_report/1": QUALITY_REPORT_V1,
+    "math_intuition_lesson/2": INTUITION_LESSON_V2,
+    "math_note_request/2": NOTE_REQUEST_V2,
+    "math_study_note/2": STUDY_NOTE_V2,
+    "math_review_request/2": REVIEW_REQUEST_V2,
 }

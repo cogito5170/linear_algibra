@@ -1,0 +1,227 @@
+<title>3강. 일차결합, 생성(Span), 일차독립</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;600;700&family=Noto+Serif+KR:wght@600;800&display=swap">
+<style>
+/* Layout: one reading column like a textbook page; boxed blocks colored by role. */
+:root {
+  --bg: #f6f7f9; --paper: #ffffff; --ink: #1c2230; --muted: #5d6676; --rule: #dde2ea; --tint: #eef1f6;
+  --accent: #2450b8;
+  --def: #2450b8; --def-bg: #eef3fd;
+  --thm: #6f3bb0; --thm-bg: #f4effb;
+  --rec: #17775a; --rec-bg: #ebf7f2;
+  --prof: #a35a07; --prof-bg: #fdf4e6;
+  --warn: #b5352a; --warn-bg: #fcefed;
+  --pivot: #2450b8; --pivot-ink: #ffffff; --elim: #d9f0e3; --free: #fff1cc;
+  --c1: #2450b8; --c2: #c2410c; --c3: #17775a;
+  --font-display: "Noto Serif KR", "Apple SD Gothic Neo", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11141b; --paper: #181c25; --ink: #e5e8ee; --muted: #9aa3b3; --rule: #2b3241; --tint: #202634;
+  --accent: #86a8ff;
+  --def: #86a8ff; --def-bg: #1a2338; --thm: #c4a1ff; --thm-bg: #241d36; --rec: #5ccfa3; --rec-bg: #15291f;
+  --prof: #f0aa55; --prof-bg: #2c2214; --warn: #ff8a7a; --warn-bg: #2e1a19;
+  --pivot: #86a8ff; --pivot-ink: #11141b; --elim: #1d3a2c; --free: #3a3016;
+  --c1: #86a8ff; --c2: #ff9a62; --c3: #5ccfa3; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11141b; --paper: #181c25; --ink: #e5e8ee; --muted: #9aa3b3; --rule: #2b3241; --tint: #202634;
+  --accent: #86a8ff;
+  --def: #86a8ff; --def-bg: #1a2338; --thm: #c4a1ff; --thm-bg: #241d36; --rec: #5ccfa3; --rec-bg: #15291f;
+  --prof: #f0aa55; --prof-bg: #2c2214; --warn: #ff8a7a; --warn-bg: #2e1a19;
+  --pivot: #86a8ff; --pivot-ink: #11141b; --elim: #1d3a2c; --free: #3a3016;
+  --c1: #86a8ff; --c2: #ff9a62; --c3: #5ccfa3; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.75; }
+.page { max-width: 46rem; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.35; margin: 0; }
+h1 { font-size: 1.9rem; font-weight: 800; }
+h2 { font-size: 1.45rem; font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+.flow > * + * { margin-top: 0.7em; }
+ul, ol { margin: 0; padding-left: 1.4em; }
+li + li { margin-top: 0.25em; }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--tint); padding: 0 4px; border-radius: 4px; }
+blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--rule); color: var(--muted); }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); }
+.panel { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+.panel h2 { font-size: 1.1rem; margin-bottom: 10px; }
+.objectives li::marker { color: var(--accent); }
+.keyideas ol { padding-left: 1.6em; }
+.keyideas li::marker { font-family: var(--font-mono); color: var(--accent); }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 4px; align-items: center; font-size: 0.88rem; }
+.toc a { color: var(--ink); text-decoration: none; border: 1px solid var(--rule); background: var(--paper); border-radius: 999px; padding: 2px 10px; }
+.toc a.core { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.toc a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toc .sep { color: var(--muted); }
+.legend { font-size: 0.82rem; color: var(--muted); }
+.concept { display: grid; gap: 14px; scroll-margin-top: 16px; }
+.concept-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.concept-head .num { font-family: var(--font-mono); color: var(--accent); font-size: 1rem; }
+.concept-head .badge { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; border: 1px solid var(--accent); color: var(--accent); border-radius: 4px; padding: 0 6px; }
+.block { border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.block-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.kind { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; font-weight: 500; }
+.block-title { font-weight: 700; }
+.tag { font-size: 0.72rem; border-radius: 999px; padding: 0 8px; background: var(--tint); color: var(--muted); }
+.b-definition { background: var(--def-bg); border-left: 4px solid var(--def); } .b-definition .kind { color: var(--def); }
+.b-theorem { background: var(--thm-bg); border-left: 4px solid var(--thm); } .b-theorem .kind { color: var(--thm); }
+.b-proof { background: var(--paper); border: 1px solid var(--rule); margin-left: 12px; } .b-proof .kind { color: var(--thm); }
+.b-proof .qed { float: right; color: var(--thm); }
+.b-recipe { background: var(--rec-bg); border-left: 4px solid var(--rec); } .b-recipe .kind { color: var(--rec); }
+.b-explanation { background: transparent; padding-inline: 0; } .b-explanation .kind { color: var(--muted); }
+.b-example, .b-figure { background: var(--paper); border: 1px solid var(--rule); } .b-example .kind, .b-figure .kind { color: var(--ink); }
+.b-professor { background: var(--prof-bg); border: 1px solid var(--prof); } .b-professor .kind { color: var(--prof); }
+.b-warning { background: var(--warn-bg); border-left: 4px solid var(--warn); } .b-warning .kind { color: var(--warn); }
+.b-intuition, .b-why, .b-connection { background: var(--tint); font-size: 0.95rem; } .b-intuition .kind, .b-why .kind, .b-connection .kind { color: var(--muted); }
+.support-label { font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.06em; margin-top: 6px; }
+.recon { margin-top: 12px; border-top: 1px dashed var(--prof); padding-top: 10px; }
+.recon .recon-label { font-size: 0.78rem; color: var(--prof); font-weight: 700; }
+.recon .recon-note { font-size: 0.75rem; color: var(--muted); }
+.recon .speech { margin-top: 4px; font-family: var(--font-display); font-weight: 600; line-height: 1.8; }
+.cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+.display-math { overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.92rem; }
+th, td { border: 1px solid var(--rule); padding: 4px 10px; text-align: left; }
+th { background: var(--tint); }
+/* figures */
+.fig { margin-top: 10px; }
+.fig-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 6px; }
+.fig-caption { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+.rr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px; overflow-x: auto; }
+.rr-step { display: grid; gap: 4px; justify-items: start; }
+.rr-label { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); }
+.rr-arrow { font-size: 1.3rem; color: var(--muted); padding-inline: 2px; }
+.mat { display: grid; align-items: center; column-gap: 0; position: relative; padding-inline: 8px; font-variant-numeric: tabular-nums; }
+.mat::before, .mat::after { content: ""; position: absolute; top: 2px; bottom: 2px; width: 7px; border: 1.5px solid var(--ink); }
+.mat::before { left: 0; border-right: none; }
+.mat::after { right: 0; border-left: none; }
+.cell { min-width: 2.1em; height: 2.1em; display: grid; place-items: center; padding-inline: 4px; border-radius: 50%; font-size: 0.95rem; }
+.cell.pivot { background: var(--pivot); color: var(--pivot-ink); font-weight: 700; }
+.cell.eliminate { background: var(--elim); border-radius: 6px; }
+.cell.free { background: var(--free); border-radius: 0; }
+.cell.focus { outline: 2px solid var(--c2); border-radius: 6px; }
+.cell.aug { border-left: 1.5px solid var(--ink); border-radius: 0; }
+.ops { display: grid; align-items: center; font-size: 0.8rem; color: var(--accent); }
+.op { height: 2.1em; display: flex; align-items: center; white-space: nowrap; padding-left: 6px; }
+.mat-wrap { display: flex; align-items: stretch; }
+.plot { max-width: 100%; height: auto; display: block; }
+.plot text { fill: var(--muted); font-size: 11px; font-family: var(--font-body); }
+.plot .lbl { font-size: 12px; font-weight: 600; }
+.flowchart { position: relative; display: grid; gap: 40px; padding: 6px 0; }
+.flow-row { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; position: relative; z-index: 1; }
+.flow-node { background: var(--paper); border: 1.5px solid var(--ink); border-radius: 8px; padding: 6px 12px; font-size: 0.9rem; max-width: 18rem; text-align: center; }
+.flow-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.flow-svg line { stroke: var(--muted); stroke-width: 1.5; }
+.flow-svg text { fill: var(--accent); font-size: 12px; font-weight: 700; }
+.legend-dot { display: inline-block; width: 0.9em; height: 0.9em; border-radius: 50%; vertical-align: -0.1em; margin-right: 4px; }
+/* exam */
+.exam { display: grid; gap: 14px; }
+.tf-list { display: grid; gap: 8px; }
+.q { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px; }
+.q-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+.q-id { font-family: var(--font-mono); font-weight: 500; color: var(--accent); }
+.diff { font-size: 0.72rem; border-radius: 4px; padding: 0 6px; border: 1px solid currentColor; }
+.diff-basic { color: var(--rec); } .diff-standard { color: var(--accent); } .diff-advanced { color: var(--warn); }
+details { margin-top: 8px; }
+summary { cursor: pointer; color: var(--accent); font-size: 0.88rem; font-weight: 600; }
+details > div { margin-top: 8px; padding: 10px 12px; background: var(--tint); border-radius: 6px; }
+.why-likely { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+.banner { background: var(--warn-bg); border: 1px solid var(--warn); border-radius: 8px; padding: 12px 14px; }
+@media (max-width: 480px) { body { font-size: 15px; } h1 { font-size: 1.55rem; } .b-proof { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+<main class="page">
+<header class="flow"><div class="eyebrow">공부 노트</div><h1>3강. 일차결합, 생성(Span), 일차독립</h1><div class="lede flow"><p>이번 강의는 하나의 질문에서 출발한다. <strong>몇 개의 벡터로 공간 전체를 표현할 수 있을까?</strong></p><p>먼저 벡터 몇 개로 다른 벡터를 '만드는' 방법을 정한다(일차결합). 다음으로 그렇게 만들 수 있는 것을 전부 모아 본다(span). 마지막으로 그 재료 중에 쓸데없는 벡터가 끼어 있지 않은지 따진다(일차독립).</p><p>'충분히 만들 수 있는가'와 '낭비가 없는가', 이 두 질문이 합쳐지는 곳이 다음 시간의 기저다.</p></div></header>
+<section class="panel objectives"><h2>이 절을 마치면 할 수 있어야 하는 것</h2><ul><li>벡터들의 일차결합을 계산한다.</li><li>span이 무엇을 모은 집합인지 설명한다.</li><li>일차독립의 정의를 영벡터와 계수로 말한다.</li><li>벡터 묶음이 일차독립인지 판정한다.</li></ul></section>
+<section class="panel keyideas"><h2>핵심 요약</h2><ol><li>일차결합은 벡터를 상수배해 더한 것이다.</li><li>span은 만들 수 있는 일차결합 전체의 집합이고, 부분공간이다.</li><li>일차독립은 영벡터를 만드는 계수가 모두 0인 것뿐이라는 뜻이다.</li><li>영벡터가 들어 있으면 항상 일차종속이다.</li></ol></section>
+<nav class="toc" aria-label="개념 흐름"><a href="#c-C1">1. 일차결합</a><span class="sep" aria-hidden="true">→</span><a class="core" href="#c-C2">2. 생성 (Span)</a><span class="sep" aria-hidden="true">→</span><a class="core" href="#c-C3">3. 일차독립 / 일차종속</a><span class="sep" aria-hidden="true">→</span><a href="#c-C4">4. 기저 (Basis)</a></nav>
+<p class="legend">굵은 테두리는 핵심 개념입니다. 상자의 <span class="tag">추론</span>은 자료에 직접 없지만 흐름상 추론한 내용, <span class="tag">불확실</span>은 자료만으로 확인이 어려운 내용입니다. 교수님 강조 상자의 "수업 설명 재구성"은 교안 근거로 추정한 설명이며 실제 발언 인용이 아닙니다.</p>
+<section class="concept" id="c-C1">
+<div class="concept-head"><span class="num">1</span><h2>일차결합 (Linear Combination)</h2></div>
+<div class="block b-definition"><div class="block-head"><span class="kind">정의</span><span class="tag">자료+추론</span></div><div class="flow"><p>벡터 몇 개를 정해 두고, 각각을 몇 배 할지 고른 뒤 모두 더한다. 그렇게 나온 벡터 하나가 <strong>일차결합</strong>이다.</p><p>배수(계수)는 0이나 음수여도 된다. 0배는 그 벡터를 안 쓰는 것이고, 음수배는 방향을 뒤집어 쓰는 것이다.</p><p>예: $3(1,0) + (-2)(0,1) = (3,-2)$</p></div></div>
+<div class="block b-explanation"><div class="block-head"><span class="kind">핵심 설명</span><span class="block-title">핵심 수식</span></div><div class="flow"><div class="display-math">$$c_1v_1 + c_2v_2 + \cdots + c_kv_k$$</div><p>각 벡터 $v_i$를 $c_i$배 해서 모두 더한다. $v_i$는 재료, $c_i$는 그 재료를 얼마나 쓸지 정하는 스칼라다.</p></div></div>
+<div class="support-label">이해를 돕는 설명</div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">추론</span></div><div class="flow"><p>벡터를 재료로 삼아, 각각 얼마나 쓸지 정해서 섞은 결과.</p></div></div>
+<div class="block b-connection"><div class="block-head"><span class="kind">개념 연결</span></div><div class="flow"><ul><li>일차결합을 <strong>전부</strong> 모으면 → span</li><li><strong>영벡터</strong>를 만드는 일차결합을 살펴보면 → 일차독립</li></ul></div></div>
+<div class="cite">자료 위치: slides p.2, slides p.3, slides p.4, slides p.5</div>
+</section>
+<section class="concept" id="c-C2">
+<div class="concept-head"><span class="num">2</span><h2>생성 (Span)</h2><span class="badge">핵심</span></div>
+<div class="block b-definition"><div class="block-head"><span class="kind">정의</span></div><div class="flow"><p>계수를 모든 실수로 바꿔 가며 만든 일차결합을 <strong>전부</strong> 모은 것이 span이다.</p><p>그래서 span은 벡터 하나가 아니라 <strong>벡터들의 집합</strong>이다. 그리고 이 집합은 V의 부분공간이 된다.</p></div></div>
+<div class="block b-theorem"><div class="block-head"><span class="kind">정리</span></div><div class="flow"><p>span{v1, ..., vk}는 V의 부분공간이다.</p></div></div>
+<div class="block b-proof"><div class="block-head"><span class="kind">증명</span><span class="tag">직접 계산</span><span class="tag">추론</span></div><div class="flow"><ol><li>모든 계수를 0으로 두면 영벡터가 나온다. 그래서 영벡터가 span 안에 있다.</li><li>두 일차결합을 더하면 계수끼리 더한 일차결합이다. 그래서 덧셈에 닫혀 있다.</li><li>일차결합에 스칼라 $k$를 곱하면 계수가 모두 $k$배된 일차결합이다. 그래서 스칼라배에 닫혀 있다.</li></ol><p>세 조건을 만족하므로 부분공간이다.</p></div><div class="qed" aria-label="증명 끝">∎</div><div style="clear:both"></div></div>
+<div class="block b-explanation"><div class="block-head"><span class="kind">핵심 설명</span><span class="block-title">핵심 수식</span></div><div class="flow"><div class="display-math">$$\operatorname{span}\{v_1,\dots,v_k\} = \{\, c_1v_1+\cdots+c_kv_k : c_1,\dots,c_k \in \mathbb{R} \,\}$$</div><ul><li>중괄호 <code>{ … : … }</code>: ':' 뒤의 조건을 만족하는 것들을 모은 집합</li><li>$c_i \in \mathbb{R}$: 계수는 <strong>어떤 실수든</strong> 될 수 있다. 계수를 일부 값으로 제한하면 span이 아니다.</li></ul></div></div>
+<div class="block b-example"><div class="block-head"><span class="kind">예제</span><span class="tag">자료+추론</span></div><div class="flow"><p>$\mathbb{R}^2$의 아무 벡터 $(a,b)$를 고르자. 그러면</p><div class="display-math">$$(a,b) = a(1,0) + b(0,1)$$</div><p>어떤 $(a,b)$든 두 벡터의 일차결합으로 쓸 수 있다. 그래서 $\operatorname{span}\{(1,0),(0,1)\} = \mathbb{R}^2$.</p><p>결국 'span이 공간 전체와 같다'는 말은 '그 공간의 모든 벡터를 만들 수 있다'는 뜻이다.</p></div><div class="fig"><div class="fig-title">span{(1,0)}과 span{(0,1)}</div><div style="overflow-x:auto"><svg class="plot" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="span{(1,0)}과 span{(0,1)}"><defs><clipPath id="fig1-clip"><rect x="24" y="24" width="272" height="272"/></clipPath></defs><line x1="24.0" y1="296.0" x2="24.0" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="296.0" x2="296.0" y2="296.0" style="stroke:var(--rule);stroke-width:1"/><line x1="51.2" y1="296.0" x2="51.2" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="268.8" x2="296.0" y2="268.8" style="stroke:var(--rule);stroke-width:1"/><line x1="78.4" y1="296.0" x2="78.4" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="241.6" x2="296.0" y2="241.6" style="stroke:var(--rule);stroke-width:1"/><line x1="105.6" y1="296.0" x2="105.6" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="214.4" x2="296.0" y2="214.4" style="stroke:var(--rule);stroke-width:1"/><line x1="132.8" y1="296.0" x2="132.8" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="187.2" x2="296.0" y2="187.2" style="stroke:var(--rule);stroke-width:1"/><line x1="160.0" y1="296.0" x2="160.0" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="160.0" x2="296.0" y2="160.0" style="stroke:var(--rule);stroke-width:1"/><line x1="187.2" y1="296.0" x2="187.2" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="132.8" x2="296.0" y2="132.8" style="stroke:var(--rule);stroke-width:1"/><line x1="214.4" y1="296.0" x2="214.4" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="105.6" x2="296.0" y2="105.6" style="stroke:var(--rule);stroke-width:1"/><line x1="241.6" y1="296.0" x2="241.6" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="78.4" x2="296.0" y2="78.4" style="stroke:var(--rule);stroke-width:1"/><line x1="268.8" y1="296.0" x2="268.8" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="51.2" x2="296.0" y2="51.2" style="stroke:var(--rule);stroke-width:1"/><line x1="296.0" y1="296.0" x2="296.0" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="24.0" x2="296.0" y2="24.0" style="stroke:var(--rule);stroke-width:1"/><line x1="24.0" y1="160.0" x2="296.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.2"/><line x1="160.0" y1="296.0" x2="160.0" y2="24.0" style="stroke:var(--muted);stroke-width:1.2"/><text x="286.0" y="154.0">x</text><text x="166.0" y="36.0">y</text><line x1="24.0" y1="160.0" x2="296.0" y2="160.0" clip-path="url(#fig1-clip)" style="stroke:var(--c1);stroke-width:2.4;"/><line x1="160.0" y1="296.0" x2="160.0" y2="24.0" clip-path="url(#fig1-clip)" style="stroke:var(--c2);stroke-width:2.4;"/><circle cx="160.0" cy="160.0" r="5" style="fill:var(--ink)"/><text class="lbl" x="168.0" y="152.0" style="fill:var(--ink)">(0, 0)</text></svg></div><div class="fig-caption"><div><span class="legend-dot" style="background:var(--c1)"></span>span{(1,0)}: y = 0</div><div><span class="legend-dot" style="background:var(--c2)"></span>span{(0,1)}: x = 0</div></div><div class="fig-caption"><p>(1,0) 하나로는 x축($y = 0$) 위만, (0,1) 하나로는 y축($x = 0$) 위만 갈 수 있다. 둘을 함께 쓰면 평면 전체로 갈 수 있다.</p></div></div></div>
+<div class="block b-professor"><div class="block-head"><span class="kind">교수님 강조</span></div><div class="flow"><p>판서: span = 만들 수 있는 것 전부. <strong>"재료로 만들 수 있는 모든 벡터"</strong></p><p>span은 '만들 수 있는 것 전부'라는 집합이다. 벡터 하나가 아니라 무수히 많은 벡터의 모음이라는 점을 기억해야 한다.</p></div><div class="recon"><div class="recon-label">수업 설명 재구성 · 추정</div><div class="recon-note">교안의 강조 표시를 근거로 수업에서 했을 법한 설명을 재구성했습니다. 실제 발언 인용이 아닙니다.</div><div class="speech flow"><p>span을 처음 보면 어렵게 느껴지는데요, 재료로 쓸 벡터 몇 개를 정해 두고 그걸로 섞어서 만들 수 있는 걸 전부 모았다고 생각하면 돼요.</p></div></div><div class="cite">근거: P2 (교안: prof)</div></div>
+<div class="support-label">이해를 돕는 설명</div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">추론</span></div><div class="flow"><p>주어진 벡터들로 <strong>만들 수 있는 모든 것</strong>을 모은 집합.</p></div></div>
+<div class="block b-why"><div class="block-head"><span class="kind">왜 배우는가</span><span class="tag">추론</span></div><div class="flow"><p>일차결합은 '하나의' 결과다. 그런데 오늘의 질문은 '공간 <strong>전체</strong>를 표현할 수 있는가?'이다.</p><p>그러려면 이 재료들로 만들 수 있는 것을 전부 한꺼번에 가리킬 이름이 필요하다. 그게 span이다.</p></div></div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">자료+추론</span></div><div class="flow"><p><strong>직관적으로는:</strong> span은 재료 벡터들로 '갈 수 있는 모든 곳'이다. $\mathbb{R}^2$에서 $(1,0)$ 하나로는 x축 위만 갈 수 있다. $(0,1)$을 재료로 더하면 평면 전체로 갈 수 있다.</p><p><strong>엄밀하게는:</strong> span은 만들 수 있는 벡터들의 집합이고, V의 부분공간이다. 그 안에서 더하거나 스칼라배를 해도 밖으로 나가지 않는다.</p></div></div>
+<div class="block b-connection"><div class="block-head"><span class="kind">개념 연결</span><span class="tag">추론</span></div><div class="flow"><ul><li><strong>이전:</strong> 일차결합이 '한 번 섞은 결과'라면, span은 '섞을 수 있는 모든 방법의 결과'를 모은 것이다.</li><li><strong>다음:</strong> span이 같더라도 재료가 쓸데없이 많을 수 있다. 그 낭비를 따지는 것이 일차독립이다.</li></ul></div></div>
+<div class="cite">자료 위치: slides p.3, prof, mine</div>
+</section>
+<section class="concept" id="c-C3">
+<div class="concept-head"><span class="num">3</span><h2>일차독립 / 일차종속</h2><span class="badge">핵심</span></div>
+<div class="block b-definition"><div class="block-head"><span class="kind">정의</span></div><div class="flow"><p>벡터들로 <strong>영벡터</strong>를 만드는 방법을 생각해 보자.</p><p>모든 계수를 0으로 두면 당연히 영벡터가 나온다. 이것을 <strong>자명한 해</strong>라고 한다.</p><ul><li><strong>일차독립:</strong> 영벡터를 만드는 방법이 자명한 해 <strong>하나뿐</strong>이다.</li><li><strong>일차종속:</strong> 계수가 모두 0은 아닌데도 영벡터가 되는 방법이 <strong>있다</strong>.</li></ul></div></div>
+<div class="block b-theorem"><div class="block-head"><span class="kind">정리</span></div><div class="flow"><p>v1, ..., vk가 일차종속 ⇔ 어떤 vj가 나머지 벡터들의 일차결합으로 표현된다.</p></div></div>
+<div class="block b-proof"><div class="block-head"><span class="kind">증명</span><span class="tag">직접 계산</span><span class="tag">추론</span></div><div class="flow"><p>(⇒) 모두 0은 아닌 계수로 $c_1v_1 + \cdots + c_kv_k = 0$이라 하자. $c_j \neq 0$인 $j$를 고르고 양변을 $c_j$로 나누면 $v_j$가 나머지의 일차결합으로 정리된다.</p><p>(⇐) $v_j = a_1v_1 + \cdots + a_kv_k$($v_j$ 항 제외)라 하자. 이항하면 $v_j$의 계수가 $-1$인 일차결합이 0이 된다. 계수 $-1 \neq 0$이므로 일차종속이다.</p></div><div class="qed" aria-label="증명 끝">∎</div><div style="clear:both"></div></div>
+<div class="block b-recipe"><div class="block-head"><span class="kind">계산 절차</span><span class="block-title">일차독립 판정</span><span class="tag">자료+추론</span></div><div class="flow"><ol><li>벡터들을 열로 세운 행렬 $A$를 만든다.</li><li>$A\mathbf{c} = \mathbf{0}$을 행 줄인다.</li><li>자유변수가 없으면 일차독립, 있으면 일차종속.</li></ol></div></div>
+<div class="block b-figure"><div class="block-head"><span class="kind">그림</span><span class="tag">추론</span></div><div class="fig"><div class="fig-title">일차독립 판정 순서</div><div class="flowchart" id="fig2" data-edges="[{&quot;from&quot;: &quot;a&quot;, &quot;to&quot;: &quot;b&quot;, &quot;label&quot;: &quot;&quot;}, {&quot;from&quot;: &quot;b&quot;, &quot;to&quot;: &quot;c&quot;, &quot;label&quot;: &quot;&quot;}, {&quot;from&quot;: &quot;c&quot;, &quot;to&quot;: &quot;d&quot;, &quot;label&quot;: &quot;있다&quot;}, {&quot;from&quot;: &quot;c&quot;, &quot;to&quot;: &quot;e&quot;, &quot;label&quot;: &quot;없다&quot;}]"><svg class="flow-svg" aria-hidden="true"></svg><div class="flow-row"><div class="flow-node" data-node="a"><p>벡터들을 열로 세운 행렬 $A$</p></div></div><div class="flow-row"><div class="flow-node" data-node="b"><p>$A\mathbf{c} = \mathbf{0}$을 행 줄이기</p></div></div><div class="flow-row"><div class="flow-node" data-node="c"><p>자유변수가 있는가?</p></div></div><div class="flow-row"><div class="flow-node" data-node="d"><p>일차종속</p></div><div class="flow-node" data-node="e"><p>일차독립</p></div></div></div></div></div>
+<div class="block b-explanation"><div class="block-head"><span class="kind">핵심 설명</span><span class="block-title">핵심 수식</span><span class="tag">자료+추론</span></div><div class="flow"><div class="display-math">$$c_1v_1+\cdots+c_kv_k = 0 \;\Rightarrow\; c_1=\cdots=c_k=0$$</div><p>영벡터를 만드는 일차결합은 모든 계수가 0인 것뿐이다. 이 함의가 성립하면 일차독립이다. 여기서 $\Rightarrow$는 '~이면 반드시'다.</p><p><strong>(보충: 교안에 없는 수식)</strong> 벡터가 $\mathbb{R}^n$의 벡터라면, 벡터들을 열로 세운 행렬로 같은 질문을 쓸 수 있다.</p><div class="display-math">$$A\mathbf{c} = \mathbf{0}, \qquad A = \begin{bmatrix} v_1 &amp; v_2 &amp; \cdots &amp; v_k \end{bmatrix}$$</div><p>계수 벡터 $\mathbf{c}$를 미지수로 하는 동차연립방정식이다. 해가 $\mathbf{c} = \mathbf{0}$뿐이면 일차독립이다.</p></div></div>
+<div class="block b-example"><div class="block-head"><span class="kind">예제</span></div><div class="flow"><p><strong>$(1,2), (2,4)$는 종속:</strong> $(2,4) = 2(1,2)$이다. 그래서</p><div class="display-math">$$2(1,2) - (2,4) = 0$$</div><p>계수 $(2,-1)$은 모두 0이 아닌데 영벡터가 나왔다. 따라서 일차종속이다.</p><p><strong>$(1,0), (0,1)$은 독립:</strong> $c_1(1,0) + c_2(0,1) = (c_1, c_2)$이다. 이것이 $(0,0)$이 되려면 $c_1 = c_2 = 0$일 수밖에 없다.</p><p>결국 판정은 언제나 '영벡터를 만드는 계수가 전부 0인 것 말고도 있는가?'를 확인하는 것이다.</p></div><div class="fig"><div class="fig-title">(1,2), (2,4)를 열로 세워 행 줄이기</div><div class="rr"><div class="rr-step"><div class="rr-label">계수행렬</div><div class="mat-wrap"><div class="mat" style="grid-template-columns: repeat(2, auto)"><div class="cell">1</div><div class="cell">2</div><div class="cell">2</div><div class="cell">4</div></div></div></div><div class="rr-arrow" aria-hidden="true">⟶</div><div class="rr-step"><div class="rr-label">행사다리꼴</div><div class="mat-wrap"><div class="mat" style="grid-template-columns: repeat(2, auto)"><div class="cell pivot">1</div><div class="cell free">2</div><div class="cell eliminate">0</div><div class="cell free">0</div></div><div class="ops"><div class="op"></div><div class="op">$R_{2} \leftarrow R_2 - 2R_1$</div></div></div></div></div><div class="fig-caption"><p>두 번째 열에 선도 1이 없다. 그 열의 계수 $c_2$는 자유롭게 고를 수 있으므로 자명하지 않은 해가 있다.</p></div></div></div>
+<div class="block b-professor"><div class="block-head"><span class="kind">교수님 강조</span></div><div class="flow"><ul><li><strong>★ 중요 (교안):</strong> 자명한 해만 존재하는가?</li><li><strong>판서:</strong> 일차독립 = 쓸데없는 벡터가 없다. 하나라도 빼면 span이 줄어든다.</li><li><strong>판서 주의:</strong> 영벡터가 포함되면 항상 일차종속.</li><li><strong>판서 (시험에 자주 나옴):</strong> 일차독립 판정 = 동차연립방정식의 해가 자명해뿐인지 확인.</li></ul><p>일차독립 판정은 결국 '영벡터를 만드는 계수가 전부 0인 것뿐인가'를 묻는 것이다. 이 질문 하나로 정의와 판정이 모두 정리된다. 일차독립을 span과 연결한 설명이다. 독립인 묶음에서는 어떤 벡터도 다른 벡터들로 대신할 수 없으므로, 빼면 만들 수 있는 범위가 줄어든다. 영벡터가 있으면 그 계수만 1로 두어도 영벡터가 만들어진다. 그래서 판정할 필요도 없이 종속이다. 일차독립 판정을 동차연립방정식 문제로 바꾸는 방법이다. 벡터를 열로 세운 행렬의 동차방정식이 자명해만 가지는지 확인한다.</p></div><div class="recon"><div class="recon-label">수업 설명 재구성 · 추정</div><div class="recon-note">교안의 강조 표시를 근거로 수업에서 했을 법한 설명을 재구성했습니다. 실제 발언 인용이 아닙니다.</div><div class="speech flow"><p>모든 계수를 0으로 두면 영벡터가 나오는 건 당연하죠. 문제는 그것 말고 다른 방법이 있느냐예요. 그게 없으면 독립이에요. 쓸데없는 벡터가 없다는 게 무슨 뜻이냐면, 하나라도 빼면 만들 수 있는 게 줄어든다는 거예요. 영벡터가 하나라도 끼어 있으면 바로 종속이에요. 그 벡터 앞에 1을 붙이고 나머지는 0으로 두면 끝이니까요.</p></div></div><div class="cite">근거: P1 (교안: slides p.4); P3 (교안: prof); P4 (교안: prof); P5 (교안: prof)</div></div>
+<div class="block b-warning"><div class="block-head"><span class="kind">주의</span><span class="block-title">헷갈리기 쉬운 부분</span><span class="tag">자료+추론</span></div><div class="flow"><ul><li><strong>방향을 헷갈리지 말자.</strong> '모든 계수가 0이면 영벡터'는 항상 참이라 아무것도 알려 주지 않는다. 일차독립은 반대 방향, '영벡터이면 모든 계수가 0'이다.</li><li><strong>영벡터가 있으면 종속.</strong> 영벡터의 계수만 1로, 나머지를 0으로 두면 0이 아닌 계수로 영벡터가 만들어진다.</li><li><strong>'평행하지 않으면 독립'은 3개 이상에서 틀릴 수 있다.</strong> 예: $\mathbb{R}^3$의 $(1,0,0), (0,1,0), (1,1,0)$은 어느 둘도 평행하지 않다. 하지만 $(1,0,0) + (0,1,0) - (1,1,0) = 0$이라 종속이다. (일반적인 선형대수 사실로 보충한 내용)</li></ul></div></div>
+<div class="block b-proof"><div class="block-head"><span class="kind">증명</span><span class="block-title">반례: 평행하지 않아도 종속일 수 있다</span><span class="tag">반례</span><span class="tag">추론</span></div><div class="flow"><p>$\mathbb{R}^3$의 $(1,0,0)$, $(0,1,0)$, $(1,1,0)$은 어느 둘도 평행하지 않다. 하지만 $(1,0,0) + (0,1,0) - (1,1,0) = 0$이다. 계수가 모두 0은 아니므로 일차종속이다.</p></div><div class="qed" aria-label="증명 끝">∎</div><div style="clear:both"></div></div>
+<div class="support-label">이해를 돕는 설명</div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">추론</span></div><div class="flow"><p>재료 벡터들 중에 '다른 재료로 대신 만들 수 있는' <strong>중복이 없는</strong> 상태.</p></div></div>
+<div class="block b-why"><div class="block-head"><span class="kind">왜 배우는가</span><span class="tag">추론</span></div><div class="flow"><p>span으로 '무엇을 만들 수 있는가'를 알게 됐다. 그런데 같은 span을 더 적은 벡터로 만들 수 있다면, 어떤 벡터는 쓸데없이 끼어 있는 셈이다.</p><p>'몇 개면 충분한가'에 답하려면, 이런 낭비가 있는지 판단할 기준이 필요하다.</p></div></div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">자료+추론</span></div><div class="flow"><p><strong>직관적으로는:</strong> 재료 중 하나를 나머지로 만들 수 있다면, 그 재료는 없어도 된다. 일차종속은 이런 '대체 가능한 재료'가 있는 상태다. 일차독립은 그런 재료가 없는 상태다. 그래서 일차독립인 묶음에서는 어떤 벡터를 하나 빼도 span이 줄어든다.</p><p><strong>엄밀하게는:</strong> 정의는 '영벡터를 만드는 계수'로 되어 있다. 이것이 '어떤 벡터가 나머지의 일차결합'이라는 말과 같다는 것은 정리로 보장된다.</p><blockquote>일차종속 ⇔ 어떤 $v_j$가 나머지 벡터들의 일차결합으로 표현된다.</blockquote><p>여기서 '어떤 $v_j$'는 모든 벡터가 아니라 <strong>적어도 하나</strong>라는 뜻이다.</p></div></div>
+<div class="block b-connection"><div class="block-head"><span class="kind">개념 연결</span><span class="tag">추론</span></div><div class="flow"><ul><li><strong>이전:</strong> span이 '무엇을 만들 수 있나'를 묻는다면, 일차독립은 '낭비 없이 만드나'를 묻는다. 정의 자체도 일차결합으로 되어 있다.</li><li><strong>다음:</strong> 만들 수 있는 범위가 충분하고(span) 낭비가 없는(일차독립) 재료 세트가 다음 시간의 기저다.</li></ul></div></div>
+<div class="cite">자료 위치: slides p.4, slides p.5, prof, mine</div>
+</section>
+<section class="concept" id="c-C4">
+<div class="concept-head"><span class="num">4</span><h2>기저 (Basis) — 다음 시간 예고</h2></div>
+<div class="block b-explanation"><div class="block-head"><span class="kind">핵심 설명</span><span class="tag">불확실</span></div><div class="flow"><p>이번 자료에는 기저의 정의가 없다. span은 '충분한가', 일차독립은 '낭비가 없는가'를 따진다. 그래서 둘을 함께 만족하는 묶음이 '몇 개의 벡터로 공간 전체를 표현하는가'에 대한 답이 될 것으로 보인다. 정확한 정의는 다음 강의에서 확인하자.</p></div></div>
+<div class="block b-professor"><div class="block-head"><span class="kind">교수님 강조</span></div><div class="flow"><p>내 필기에 따르면, 교수님이 다음 시간에 기저를 다루며 span과 일차독립이 <strong>둘 다</strong> 필요하다고 하셨다.</p><p>기저는 span과 일차독립을 동시에 만족하는 벡터 묶음으로 다음 강의에서 다룬다(내 필기 기록).</p></div><div class="cite">근거: P6 (내 필기 기록: mine)</div></div>
+<div class="support-label">이해를 돕는 설명</div>
+<div class="block b-intuition"><div class="block-head"><span class="kind">직관</span><span class="tag">추론</span></div><div class="flow"><p>공간 전체를 만들 수 있으면서 낭비가 없는 재료 세트. 다음 시간 주제.</p></div></div>
+<div class="block b-connection"><div class="block-head"><span class="kind">개념 연결</span><span class="tag">추론</span></div><div class="flow"><p>span(충분함) + 일차독립(낭비 없음) → 기저</p></div></div>
+<div class="cite">자료 위치: mine</div>
+</section>
+<section class="panel keyideas"><h2>핵심 정리</h2><ol><li>$c_1v_1 + \cdots + c_kv_k = 0 \Rightarrow c_1 = \cdots = c_k = 0$이면 일차독립.</li><li>일차종속 ⇔ 어떤 벡터가 나머지의 일차결합이다.</li><li>판정: 열로 세운 행렬의 동차방정식에 자유변수가 있는지 본다.</li></ol></section>
+<section class="exam" id="exam"><h2>시험 대비</h2>
+<h3>개념 확인: 참일까 거짓일까</h3><div class="tf-list">
+<div class="q"><div class="q-head"><span class="q-id">OX 1</span></div><div class="flow"><p>영벡터를 포함한 벡터 묶음은 일차독립일 수 있다.</p></div><details><summary>정답 보기</summary><div class="flow"><p><strong>거짓</strong></p><p>영벡터의 계수만 1로 두면 0이 아닌 계수로 영벡터가 만들어진다.</p></div></details></div>
+<div class="q"><div class="q-head"><span class="q-id">OX 2</span></div><div class="flow"><p>span은 항상 부분공간이다.</p></div><details><summary>정답 보기</summary><div class="flow"><p><strong>참</strong></p><p>영벡터를 포함하고 덧셈과 스칼라배에 닫혀 있다.</p></div></details></div>
+</div>
+<h3>예상 문제</h3>
+<div class="q"><div class="q-head"><span class="q-id">문제 1</span><span class="diff diff-basic">기본</span><span class="tag">개념</span></div><div class="flow"><p>$\operatorname{span}\{(1,0),(0,1)\} = \mathbb{R}^2$인 이유를 설명하라.</p></div><div class="why-likely">출제 근거: 교안 예제(E1)와 판서 설명(P2)이 직접 다룬다.</div><details><summary>답과 풀이</summary><div class="flow"><p><strong>답</strong></p><p>모든 $(a,b)$를 $a(1,0) + b(0,1)$로 쓸 수 있기 때문이다.</p><p><strong>풀이</strong></p><p>임의의 $(a,b) \in \mathbb{R}^2$에 대해 $(a,b) = a(1,0) + b(0,1)$. 그래서 $\mathbb{R}^2$의 모든 벡터가 span 안에 있다.</p></div></details></div>
+<div class="q"><div class="q-head"><span class="q-id">문제 2</span><span class="diff diff-standard">표준</span><span class="tag">계산</span></div><div class="flow"><p>$(1,2)$, $(2,4)$가 일차종속임을 보여라.</p></div><div class="why-likely">출제 근거: 교안 예제(E2)와 '★ 중요: 자명한 해만 존재하는가?'(P1)</div><details><summary>답과 풀이</summary><div class="flow"><p><strong>답</strong></p><p>$2(1,2) - (2,4) = 0$.</p><p><strong>풀이</strong></p><p>$(2,4) = 2(1,2)$이므로 계수 $(2, -1)$로 영벡터를 만들 수 있다. 계수가 모두 0은 아니므로 일차종속이다.</p></div></details></div>
+</section>
+<section class="panel"><h2>아직 확인이 필요한 부분</h2><p class="lede">자료만으로는 확인할 수 없었던 부분입니다. 수업 필기와 대조해 보세요.</p><ul><li><strong>세 벡터가 서로 평행하지 않으면 일차독립인가?</strong> 필기에 질문으로만 남아 있고 수업 내용이 빠져 있다. 노트의 반례는 일반 지식으로 보충한 것이니, 수업에서 어떻게 다뤘는지 확인해 보자.</li><li><strong>판서의 '1·0 = 0 이니까'의 정확한 의도</strong> 영벡터의 계수를 1로 두는 논리로 해석했지만, 판서에 한 줄로만 적혀 있다.</li><li><strong>기저의 정확한 정의</strong> 이번 자료에는 다음 강의 주제로만 언급되어 있다.</li></ul></section>
+</main>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'},startup:{pageReady:function(){return MathJax.startup.defaultPageReady().then(function(){if(window.drawFlows)drawFlows();});}}};</script>
+<script>
+function drawFlows(){document.querySelectorAll('.flowchart').forEach(function(fc){
+  var svg=fc.querySelector('.flow-svg'); if(!svg) return;
+  var edges=JSON.parse(fc.getAttribute('data-edges')||'[]'); var box=fc.getBoundingClientRect();
+  var ns='http://www.w3.org/2000/svg'; while(svg.firstChild) svg.removeChild(svg.firstChild);
+  var marker=document.createElementNS(ns,'defs'); marker.innerHTML='<marker id="ah'+fc.id+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker>'; svg.appendChild(marker);
+  edges.forEach(function(e){
+    var a=fc.querySelector('[data-node="'+e.from+'"]'), b=fc.querySelector('[data-node="'+e.to+'"]'); if(!a||!b) return;
+    var ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+    var x1=ra.left+ra.width/2-box.left, y1=ra.bottom-box.top, x2=rb.left+rb.width/2-box.left, y2=rb.top-box.top;
+    if (rb.top < ra.bottom) { y1=ra.top+ra.height/2-box.top; y2=rb.top+rb.height/2-box.top; x1 = x2>x1 ? ra.right-box.left : ra.left-box.left; x2 = x2>x1 ? rb.left-box.left : rb.right-box.left; }
+    var l=document.createElementNS(ns,'line'); l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2-2);
+    l.setAttribute('marker-end','url(#ah'+fc.id+')'); svg.appendChild(l);
+    if(e.label){var t=document.createElementNS(ns,'text'); var mx=x1+(x2-x1)*0.35, my=y1+(y2-y1)*0.35;
+      var dx=x2-x1; t.setAttribute('text-anchor', dx>4?'start':(dx<-4?'end':'start'));
+      t.setAttribute('x', mx+(dx<-4?-8:8)); t.setAttribute('y', my+4); t.textContent=e.label; svg.appendChild(t);}
+  });
+});}
+window.addEventListener('load', drawFlows); window.addEventListener('resize', drawFlows);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>

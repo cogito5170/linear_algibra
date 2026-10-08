@@ -1,22 +1,10 @@
-"""Agent 4: edits the lessons into the final study-note structure."""
+"""Agent 4: edits the lessons into a textbook-style study note."""
 
 from __future__ import annotations
 
+from ..figures import figure_issues
+from ..schemas.definitions import MAIN_BLOCK_KINDS, SUPPORT_BLOCK_KINDS
 from .base import Agent
-
-SECTION_ORDER = [
-    "one_line",
-    "why",
-    "core",
-    "intuition",
-    "relations",
-    "formulas",
-    "example",
-    "professor",
-    "pitfalls",
-    "previous_link",
-    "review",
-]
 
 
 def known_refs(payload: dict) -> set[str]:
@@ -41,14 +29,27 @@ def professor_refs(payload: dict) -> set[str]:
     }
 
 
+def block_order_issues(entry: dict, where: str) -> list[str]:
+    """Main content comes first: no supporting block before the first main block."""
+    kinds = [b["kind"] for b in entry["blocks"]]
+    first_main = next((i for i, k in enumerate(kinds) if k in MAIN_BLOCK_KINDS), None)
+    if first_main is None:
+        return [f"{where}: needs at least one {'/'.join(MAIN_BLOCK_KINDS)} block"]
+    early = [k for k in kinds[:first_main] if k in SUPPORT_BLOCK_KINDS]
+    if early:
+        return [f"{where}: supporting blocks {early} come before the main content; move them after it"]
+    return []
+
+
 class NoteEditor(Agent):
     name = "note_editor"
-    input_schema = "math_note_request/1"
-    output_schema = "math_study_note/1"
+    input_schema = "math_note_request/2"
+    output_schema = "math_study_note/2"
     prompt_files = ("shared_principles", "shared_style", "note_editor")
     task_instruction = (
-        "아래 lesson을 공부 노트 `math_study_note/1`로 편집하세요. "
-        "필요한 섹션만, 정해진 순서로. revision_feedback이 있으면 모두 반영하세요."
+        "아래 lesson을 교재형 공부 노트 `math_study_note/2`로 편집하세요. "
+        "개념마다 정의·정리·절차 같은 핵심 내용을 먼저, 직관과 동기는 뒤에 둡니다. "
+        "revision_feedback이 있으면 모두 반영하세요."
     )
 
     def semantic_issues(self, output: dict, payload: dict) -> list[str]:
@@ -71,22 +72,36 @@ class NoteEditor(Agent):
 
         for entry in output["entries"]:
             where = f"entries[{entry['concept_id']}]"
-            keys = [s["key"] for s in entry["sections"]]
-            if len(set(keys)) != len(keys):
-                issues.append(f"{where}: duplicate section keys {keys}")
-            positions = [SECTION_ORDER.index(k) for k in keys]
-            if positions != sorted(positions):
-                issues.append(f"{where}: sections must follow the order {SECTION_ORDER}")
-            for section in entry["sections"]:
-                for ref in section["refs"]:
+            issues += block_order_issues(entry, where)
+            for i, block in enumerate(entry["blocks"]):
+                at = f"{where}.blocks[{i}:{block['kind']}]"
+                for ref in block["refs"]:
                     if ref not in refs:
-                        issues.append(f"{where}.{section['key']}: unknown ref {ref}")
-                if section["key"] == "professor":
-                    cited = [r for r in section["refs"] if r in prof]
-                    if not cited:
-                        issues.append(
-                            f"{where}.professor: the professor section must cite at least one verified P id"
-                        )
+                        issues.append(f"{at}: unknown ref {ref}")
+                if block["kind"] == "professor":
+                    if not any(r in prof for r in block["refs"]):
+                        issues.append(f"{at}: a professor block must cite at least one verified P id")
+                elif block["reconstruction"] is not None:
+                    issues.append(f"{at}: reconstruction is only allowed in professor blocks")
+                if block["kind"] == "proof" and block["proof_method"] is None:
+                    issues.append(f"{at}: proof blocks need a proof_method")
+                if block["kind"] in ("figure", "example") and block["figure"] is not None:
+                    issues += figure_issues(block["figure"], at)
+                elif block["figure"] is not None:
+                    issues.append(f"{at}: figures belong in figure or example blocks")
+                if block["kind"] == "figure" and block["figure"] is None:
+                    issues.append(f"{at}: figure block without figure data")
+
+        for problem in output["exam"]["problems"]:
+            for ref in problem["refs"]:
+                if ref not in refs:
+                    issues.append(f"exam.problems[{problem['id']}]: unknown ref {ref}")
+            if problem["figure"] is not None:
+                issues += figure_issues(problem["figure"], f"exam.problems[{problem['id']}]")
+        for i, tf in enumerate(output["exam"]["true_false"]):
+            for ref in tf["refs"]:
+                if ref not in refs:
+                    issues.append(f"exam.true_false[{i}]: unknown ref {ref}")
         for q in output["open_questions"]:
             for ref in q["refs"]:
                 if ref not in refs:

@@ -7,9 +7,20 @@
       "category": "source_fidelity",
       "severity": "error",
       "passed": true,
-      "message": "C2.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "message": "C2.professor[5]: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
       "targets": [
-        "C2.professor"
+        "C2.professor[5]"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "SF2.reconstruction_scope",
+      "category": "source_fidelity",
+      "severity": "error",
+      "passed": true,
+      "message": "C2.professor[5]: 교수님 설명 재구성은 P 근거가 있는 교수님 강조 상자에만 쓸 수 있음",
+      "targets": [
+        "C2.professor[5]"
       ],
       "origin": "deterministic"
     },
@@ -18,20 +29,20 @@
       "category": "source_fidelity",
       "severity": "error",
       "passed": true,
-      "message": "C3.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "message": "C3.professor[7]: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
       "targets": [
-        "C3.professor"
+        "C3.professor[7]"
       ],
       "origin": "deterministic"
     },
     {
-      "check_id": "SF2.supplementary_formula_label",
+      "check_id": "SF2.reconstruction_scope",
       "category": "source_fidelity",
-      "severity": "warning",
+      "severity": "error",
       "passed": true,
-      "message": "C3.formulas: 교안에 없는 보충 수식은 '보충'이라고 표시해야 함",
+      "message": "C3.professor[7]: 교수님 설명 재구성은 P 근거가 있는 교수님 강조 상자에만 쓸 수 있음",
       "targets": [
-        "C3.formulas"
+        "C3.professor[7]"
       ],
       "origin": "deterministic"
     },
@@ -40,9 +51,9 @@
       "category": "source_fidelity",
       "severity": "error",
       "passed": true,
-      "message": "C4.professor: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
+      "message": "C4.professor[1]: 교수님 관련 서술은 검증된 교수님 자료(P id)를 근거로 가져야 함",
       "targets": [
-        "C4.professor"
+        "C4.professor[1]"
       ],
       "origin": "deterministic"
     },
@@ -67,11 +78,11 @@
       "origin": "deterministic"
     },
     {
-      "check_id": "CC2.core_sections",
-      "category": "conceptual_clarity",
-      "severity": "error",
+      "check_id": "IN1.why_present",
+      "category": "intuition",
+      "severity": "warning",
       "passed": true,
-      "message": "C2: 핵심 개념에는 한 줄 직관과 핵심 개념 섹션이 필요",
+      "message": "C2: '왜 배우는가' 보조 설명이 있으면 좋음",
       "targets": [
         "C2"
       ],
@@ -89,13 +100,57 @@
       "origin": "deterministic"
     },
     {
-      "check_id": "CC2.core_sections",
+      "check_id": "IN1.why_present",
+      "category": "intuition",
+      "severity": "warning",
+      "passed": true,
+      "message": "C3: '왜 배우는가' 보조 설명이 있으면 좋음",
+      "targets": [
+        "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.main_content_first",
       "category": "conceptual_clarity",
       "severity": "error",
       "passed": true,
-      "message": "C3: 핵심 개념에는 한 줄 직관과 핵심 개념 섹션이 필요",
+      "message": "C1: 핵심 내용이 먼저 나옴",
+      "targets": [
+        "C1"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.main_content_first",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C2: 핵심 내용이 먼저 나옴",
+      "targets": [
+        "C2"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.main_content_first",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C3: 핵심 내용이 먼저 나옴",
       "targets": [
         "C3"
+      ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "CC2.main_content_first",
+      "category": "conceptual_clarity",
+      "severity": "error",
+      "passed": true,
+      "message": "C4: 핵심 내용이 먼저 나옴",
+      "targets": [
+        "C4"
       ],
       "origin": "deterministic"
     },
@@ -109,79 +164,24 @@
       "origin": "deterministic"
     },
     {
-      "check_id": "IN2.meaning_before_formula",
-      "category": "intuition",
-      "severity": "error",
-      "passed": true,
-      "message": "C1: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
-      "targets": [
-        "C1.formulas"
-      ],
-      "origin": "deterministic"
-    },
-    {
-      "check_id": "IN1.why_present",
-      "category": "intuition",
-      "severity": "error",
-      "passed": true,
-      "message": "C2: '왜 배우는가?'가 있어야 함",
-      "targets": [
-        "C2"
-      ],
-      "origin": "deterministic"
-    },
-    {
-      "check_id": "IN2.meaning_before_formula",
-      "category": "intuition",
-      "severity": "error",
-      "passed": true,
-      "message": "C2: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
-      "targets": [
-        "C2.formulas"
-      ],
-      "origin": "deterministic"
-    },
-    {
-      "check_id": "IN3.inferred_why_marked",
-      "category": "source_fidelity",
+      "check_id": "PR1.theorem_has_proof",
+      "category": "logicality",
       "severity": "warning",
       "passed": true,
-      "message": "C2.why: 자료에 없는 동기를 observed로 표시하면 안 됨",
+      "message": "C2.theorem[1]: 정리 뒤에 증명이 있어야 함",
       "targets": [
-        "C2.why"
+        "C2.theorem[1]"
       ],
       "origin": "deterministic"
     },
     {
-      "check_id": "IN1.why_present",
-      "category": "intuition",
-      "severity": "error",
-      "passed": true,
-      "message": "C3: '왜 배우는가?'가 있어야 함",
-      "targets": [
-        "C3"
-      ],
-      "origin": "deterministic"
-    },
-    {
-      "check_id": "IN2.meaning_before_formula",
-      "category": "intuition",
-      "severity": "error",
-      "passed": true,
-      "message": "C3: 수식 이전에 의미 설명(핵심 개념/직관)이 있어야 함",
-      "targets": [
-        "C3.formulas"
-      ],
-      "origin": "deterministic"
-    },
-    {
-      "check_id": "IN3.inferred_why_marked",
-      "category": "source_fidelity",
+      "check_id": "PR1.theorem_has_proof",
+      "category": "logicality",
       "severity": "warning",
       "passed": true,
-      "message": "C3.why: 자료에 없는 동기를 observed로 표시하면 안 됨",
+      "message": "C3.theorem[1]: 정리 뒤에 증명이 있어야 함",
       "targets": [
-        "C3.why"
+        "C3.theorem[1]"
       ],
       "origin": "deterministic"
     },
@@ -209,6 +209,17 @@
       "origin": "deterministic"
     },
     {
+      "check_id": "EX1.exam_problems",
+      "category": "user_readability",
+      "severity": "warning",
+      "passed": true,
+      "message": "시험 대비 예상 문제가 있어야 함",
+      "targets": [
+        "exam"
+      ],
+      "origin": "deterministic"
+    },
+    {
       "check_id": "UR1.sentence_length",
       "category": "user_readability",
       "severity": "warning",
@@ -224,7 +235,7 @@
       "category": "user_readability",
       "severity": "warning",
       "passed": true,
-      "message": "C1: 보조 개념에 섹션이 4개 (과도한 분할)",
+      "message": "C1: 보조 개념에 상자가 4개 (과도한 분할)",
       "targets": [
         "C1"
       ],
@@ -235,7 +246,7 @@
       "category": "user_readability",
       "severity": "warning",
       "passed": true,
-      "message": "C2: 평균 문장 길이 28자 (권장 90자 이하)",
+      "message": "C2: 평균 문장 길이 26자 (권장 90자 이하)",
       "targets": [
         "C2"
       ],
@@ -246,7 +257,7 @@
       "category": "user_readability",
       "severity": "warning",
       "passed": true,
-      "message": "C3: 평균 문장 길이 32자 (권장 90자 이하)",
+      "message": "C3: 평균 문장 길이 30자 (권장 90자 이하)",
       "targets": [
         "C3"
       ],
@@ -257,7 +268,7 @@
       "category": "user_readability",
       "severity": "warning",
       "passed": true,
-      "message": "C4: 평균 문장 길이 33자 (권장 90자 이하)",
+      "message": "C4: 평균 문장 길이 35자 (권장 90자 이하)",
       "targets": [
         "C4"
       ],
@@ -268,10 +279,28 @@
       "category": "user_readability",
       "severity": "warning",
       "passed": true,
-      "message": "C4: 보조 개념에 섹션이 4개 (과도한 분할)",
+      "message": "C4: 보조 개념에 상자가 4개 (과도한 분할)",
       "targets": [
         "C4"
       ],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "UR3.latex_well_formed",
+      "category": "user_readability",
+      "severity": "error",
+      "passed": true,
+      "message": "LaTeX 구조 이상 없음",
+      "targets": [],
+      "origin": "deterministic"
+    },
+    {
+      "check_id": "FG1.figures_valid",
+      "category": "mathematical_correctness",
+      "severity": "error",
+      "passed": true,
+      "message": "그림 데이터 이상 없음",
+      "targets": [],
       "origin": "deterministic"
     },
     {

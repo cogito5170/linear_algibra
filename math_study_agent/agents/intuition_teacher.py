@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from ..figures import figure_issues
 from .base import Agent
+from .note_editor import known_refs
 
 
 def _context_index(payload: dict) -> dict[str, dict]:
@@ -12,11 +14,13 @@ def _context_index(payload: dict) -> dict[str, dict]:
 class IntuitionTeacher(Agent):
     name = "intuition_teacher"
     input_schema = "math_teaching_request/1"
-    output_schema = "math_intuition_lesson/1"
+    output_schema = "math_intuition_lesson/2"
     prompt_files = ("shared_principles", "shared_style", "intuition_teacher")
     task_instruction = (
-        "아래 개념 구조와 개념별 learning context로 `math_intuition_lesson/1`을 작성하세요. "
-        "learning_flow 순서대로, 모든 개념에 대해 lesson을 하나씩 씁니다."
+        "아래 개념 구조와 개념별 learning context로 `math_intuition_lesson/2`를 작성하세요. "
+        "learning_flow 순서대로, 모든 개념에 대해 lesson을 하나씩 씁니다. "
+        "정리에는 증명을, 교수님 강조에는 자세한 설명과 재구성을, 핵심 계산에는 시각자료를, "
+        "시험에 나올 만한 내용에는 예상 문항을 붙이세요."
     )
 
     def semantic_issues(self, output: dict, payload: dict) -> list[str]:
@@ -69,4 +73,16 @@ class IntuitionTeacher(Agent):
             for rel in lesson["connections"]["related"]:
                 if rel["concept_id"] not in concept_ids:
                     issues.append(f"{where}.connections: unknown concept {rel['concept_id']}")
+            all_theorems = {t["id"] for c in contexts.values() for t in c["content"]["theorems"]}
+            for proof in lesson["proofs"]:
+                if proof["theorem_ref"] and proof["theorem_ref"] not in all_theorems:
+                    issues.append(f"{where}.proofs: unknown theorem_ref {proof['theorem_ref']}")
+            for i, figure in enumerate(lesson["figures"]):
+                issues += figure_issues(figure, f"{where}.figures[{i}]")
+            known = known_refs(payload)
+            for item in lesson["exam_items"]:
+                for ref in item["basis_refs"]:
+                    if ref not in known:
+                        issues.append(f"{where}.exam_items: unknown basis ref {ref}")
         return issues
+

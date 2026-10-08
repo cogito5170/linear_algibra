@@ -3,6 +3,7 @@ from .guards import verify_analysis, verify_concept_map
 from .orchestrator import Orchestrator, OrchestratorConfig, PipelineResult
 from .quality import QualityReviewer, build_report, deterministic_checks
 from .render import render_markdown
+from .render_html import render_html
 from .style import default_style_profile
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "build_report",
     "default_style_profile",
     "deterministic_checks",
+    "render_html",
     "render_markdown",
     "to_v1",
     "verify_analysis",

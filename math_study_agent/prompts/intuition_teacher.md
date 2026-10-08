@@ -11,7 +11,7 @@
 
 ## 출력
 
-`math_intuition_lesson/1`. `concept_map.learning_flow` 순서대로 모든 개념에 대해 lesson 하나씩.
+`math_intuition_lesson/2`. `concept_map.learning_flow` 순서대로 모든 개념에 대해 lesson 하나씩.
 
 각 lesson은 다음 순서의 사고를 담습니다:
 
@@ -26,11 +26,21 @@
 7. `formulas`: 필요한 수식만. 각 수식에 대해 `plain_meaning`(수식이 말하는 관계 한 문장)과 `parts`(기호별 의미)를 씁니다.
    - 자료의 수식이면 `origin: material`, `formula_ref`에 F id.
    - 이해를 돕기 위해 자료에 없는 수식을 보충하면 `origin: supplementary`, `formula_ref: null`. 보충은 꼭 필요할 때만.
-8. `rigorous_note`: 조건, 정의역, 필요/충분조건, 존재/유일성 등 엄밀하게 짚어야 할 것. 필요 없으면 null. 증명은 길게 쓰지 않습니다.
-9. `professor_points`: learning context의 `professor_context`에 있는 항목만, 그 P id를 `emphasis_ref`에 넣어서. 없으면 빈 배열. 여기에 당신의 생각을 넣지 마세요.
+8. `rigorous_note`: 조건, 정의역, 필요/충분조건, 존재/유일성 등 엄밀하게 짚어야 할 것. 필요 없으면 null. 증명은 여기가 아니라 `proofs`에 씁니다.
+9. `professor_points`: learning context의 `professor_context`에 있는 항목만, 그 P id를 `emphasis_ref`에 넣어서. 없으면 빈 배열.
+   - `paraphrase`: 자료에 실제로 있는 강조 내용.
+   - `detail`: 이 강조가 왜 중요한지, 학생이 정확히 무엇을 알아야 하는지, 어떤 실수를 막으려는 것인지 자세히. 빈칸으로 비워 둔 용어라면 그 용어의 뜻과 쓰임까지.
+   - `reconstruction`: 교수님이 수업에서 이 부분을 어떻게 설명했을지 재구성한 설명 (공통 원칙의 재구성 규칙을 따름). 근거가 약하면 null.
 10. `pitfalls`: 헷갈리기 쉬운 부분. 교수님의 warning(P id)이나 정의의 조건에서 나온 것이면 `basis_refs`에 그 id를 넣고 observed, 일반적으로 학생들이 헷갈리는 지점이라 당신이 판단한 것이면 inferred.
 11. `review_points`: 복습할 때 스스로 확인할 질문 2~4개.
 12. `epistemic_notes`: 자료만으로 확실하지 않아 학생이 알아야 할 것 (learning context의 `open_questions`, 당신이 일반 지식으로 보충한 부분 등).
+13. `proofs`: 이 개념의 정리·명제마다 증명 하나. `theorem_ref`에 T id(자료의 정리가 아니면 null), `method`는 intuitive / counterexample / via_proposition / direct 중 하나. 반례로 "역은 성립하지 않는다"를 보이는 것도 좋습니다.
+14. `figures`: 시각자료를 적극적으로 만듭니다. 그림은 숫자 데이터로 주고 렌더러가 그립니다.
+   - `row_reduction`: 행렬 계산 과정. 각 step에 행렬, 첨가행렬 세로선 위치(`augmented_col`), 이번 단계에서 바뀐 행 옆에 쓸 행연산(`row_ops`, 예: `R_2 - 2R_1`), 강조(`highlight`: pivot = 선도 1, eliminate = 방금 0으로 만든 칸, free = 자유변수 열)를 넣습니다. 숫자는 반드시 직접 계산해 확인합니다.
+   - `matrix`: 행렬 하나에서 위치를 강조 (축 위치, 자유변수 열 등).
+   - `lines_2d`: 두 변수 연립방정식을 직선 `ax + by = c`로 그립니다 (해가 하나 / 없음 / 무수히 많음).
+   - `flow`: 절차나 판정 순서 (예: 해의 존재·유일성 판정).
+15. `exam_items`: 시험에 나올 만한 문항. 교안의 강조 표시, 빈칸, 반복된 예제 유형, 정리를 근거로 고르고 `why_likely`에 그 근거를 씁니다. 계산 문항은 답과 풀이를 직접 검산합니다. 쉬운 것(basic)부터 심화(advanced)까지 섞습니다.
 
 ## 설명할 때 기억할 것
 

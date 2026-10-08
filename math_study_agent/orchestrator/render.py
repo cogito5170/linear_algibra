@@ -1,110 +1,116 @@
-"""Deterministic Markdown rendering of a `math_study_note/1`.
+"""Markdown rendering of a `math_study_note/2` (fallback next to the HTML page).
 
-The Note Editor decides *what* to say; the renderer owns the layout, so that
-section order, numbering, epistemic labels and source citations are always
-consistent and empty sections never appear.
+The HTML page (`render_html`) is the primary output. This Markdown version
+keeps the same order and labels so the note is readable in any Markdown viewer.
 """
 
 from __future__ import annotations
 
+from fractions import Fraction
+
 from ..epistemics import STATUS_LABELS_KO
-
-SECTION_TITLES = {
-    "one_line": "한 줄 직관",
-    "why": "왜 배우는가?",
-    "core": "핵심 개념",
-    "intuition": "직관적으로 이해하기",
-    "relations": "개념 사이의 관계",
-    "formulas": "핵심 수식",
-    "example": "간단한 예",
-    "professor": "교수님이 강조한 부분",
-    "pitfalls": "헷갈리기 쉬운 부분",
-    "previous_link": "이전 개념과 연결",
-    "review": "복습 포인트",
-}
-
-LEGEND = (
-    "> 이 노트는 교안과 필기를 바탕으로 재구성한 것입니다. "
-    "섹션 제목의 `[추론]`은 자료에 직접 쓰여 있지 않지만 흐름상 추론한 내용, "
-    "`[불확실]`은 자료만으로 확인하기 어려운 내용, `[자료+추론]`은 둘이 섞인 내용입니다. "
-    "교수님에 관한 내용은 자료에서 근거를 확인한 것만 실었습니다."
-)
+from .render_html import DIFFICULTY_LABELS, EXAM_TYPE_LABELS, KIND_LABELS, PROOF_METHOD_LABELS
 
 
-def _location(source: dict) -> str:
-    if source.get("page") is not None:
-        return f"{source['material_id']} p.{source['page']}"
-    if source.get("section"):
-        return f"{source['material_id']} · {source['section']}"
-    return source["material_id"]
+def _tex_entry(value: str) -> str:
+    v = value.strip().replace("−", "-")
+    if v == "*":
+        return "\\ast"
+    try:
+        frac = Fraction(v)
+        if frac.denominator == 1:
+            return str(frac.numerator)
+        sign = "-" if frac < 0 else ""
+        return f"{sign}\\tfrac{{{abs(frac.numerator)}}}{{{frac.denominator}}}"
+    except (ValueError, ZeroDivisionError):
+        return v
 
 
-def _locations(sources: list[dict]) -> str:
-    seen, out = set(), []
-    for s in sources:
-        label = _location(s)
-        if label not in seen:
-            seen.add(label)
-            out.append(label)
-    return ", ".join(out)
+def _tex_matrix(step: dict) -> str:
+    rows = step["matrix"]
+    width = len(rows[0])
+    aug = step["augmented_col"]
+    spec = "c" * width if aug is None else "c" * aug + "|" + "c" * (width - aug)
+    body = " \\\\ ".join(" & ".join(_tex_entry(v) for v in row) for row in rows)
+    return f"\\left[\\begin{{array}}{{{spec}}} {body} \\end{{array}}\\right]"
 
 
-def render_markdown(
-    note: dict,
-    concept_map: dict,
-    contexts: list[dict],
-    *,
-    quality_report: dict | None = None,
-) -> str:
-    ctx_by_id = {c["concept"]["id"]: c for c in contexts}
+def figure_markdown(figure: dict) -> str:
+    out = []
+    if figure["title"]:
+        out.append(f"**{figure['title']}**")
+    if figure["kind"] in ("row_reduction", "matrix"):
+        for i, step in enumerate(figure["steps"]):
+            ops = [f"R_{{{r + 1}}} \\leftarrow {op}" if "\\leftarrow" not in op and "\\leftrightarrow" not in op else op
+                   for r, op in enumerate(step["row_ops"]) if op.strip()]
+            arrow = f"\\xrightarrow{{{', '.join(ops)}}}" if ops else ("\\longrightarrow" if i else "")
+            label = f"\\text{{{step['label']}}}\\;" if step["label"] else ""
+            out.append(f"$$ {arrow} \\; {label}{_tex_matrix(step)} $$")
+    elif figure["kind"] == "lines_2d":
+        out += [f"- ${_fmt(l['a'])}x + {_fmt(l['b'])}y = {_fmt(l['c'])}$ ({l['label']})" for l in figure["lines"]]
+    elif figure["kind"] == "flow":
+        labels = {n["id"]: n["label"] for n in figure["nodes"]}
+        out += [f"- {labels[e['from']]} → **{e['label']}** → {labels[e['to']]}" for e in figure["edges"]]
+    if figure["caption"]:
+        out.append(f"*{figure['caption']}*")
+    return "\n\n".join(out)
+
+
+def _fmt(v: float) -> str:
+    return str(int(v)) if float(v).is_integer() else str(v)
+
+
+def render_markdown(note: dict, concept_map: dict, contexts: list[dict], *, quality_report: dict | None = None) -> str:
     names = {c["id"]: c["name"] for c in concept_map["concepts"]}
-    emphasis = {
-        p["id"]: p for ctx in contexts for group in ctx["professor_context"].values() for p in group
-    }
-    source_of_chunk = {s["chunk_id"]: s for ctx in contexts for s in ctx["sources"]}
-
-    out: list[str] = [f"# {note['title']}", ""]
-
+    core = set(concept_map["core_concepts"])
+    out = [f"# {note['title']}", ""]
     if quality_report is not None and not quality_report["passed"]:
-        out += ["> ⚠️ **검토 필요**: 자동 품질 검사에서 해결되지 않은 문제가 있습니다. 아래 항목을 확인하세요."]
-        for c in quality_report["checks"]:
-            if not c["passed"] and c["severity"] == "error":
-                out.append(f"> - `{c['check_id']}` {c['message']}")
+        out.append("> **검토 필요**: 자동 품질 검사에서 해결되지 않은 문제가 있습니다.")
+        out += [f"> - `{c['check_id']}` {c['message']}" for c in quality_report["checks"]
+                if not c["passed"] and c["severity"] == "error"]
         out.append("")
+    out += [note["big_picture"].strip(), ""]
+    if note["objectives"]:
+        out += ["## 이 절을 마치면 할 수 있어야 하는 것", ""] + [f"- {o}" for o in note["objectives"]] + [""]
+    if note["key_ideas"]:
+        out += ["## 핵심 요약", ""] + [f"{i}. {k}" for i, k in enumerate(note["key_ideas"], 1)] + [""]
+    out += ["**개념 흐름:** " + " → ".join(
+        (f"**{names.get(c, c)}**" if c in core else names.get(c, c)) for c in note["concept_order"]), ""]
 
-    out += [LEGEND, "", "## 큰 그림", "", note["big_picture"].strip(), ""]
+    for number, entry in enumerate(note["entries"], 1):
+        out += ["---", "", f"## {number}. {entry['title']}" + (" · 핵심" if entry["concept_id"] in core else ""), ""]
+        for block in entry["blocks"]:
+            tag = "" if block["status"] == "observed" else f" `[{STATUS_LABELS_KO[block['status']]}]`"
+            method = f" ({PROOF_METHOD_LABELS[block['proof_method']]})" if block["kind"] == "proof" and block["proof_method"] else ""
+            title = f" · {block['title']}" if block["title"] else ""
+            out += [f"### {KIND_LABELS[block['kind']]}{title}{method}{tag}", ""]
+            if block["body_markdown"].strip():
+                out += [block["body_markdown"].strip(), ""]
+            if block["kind"] == "proof":
+                out += ["∎", ""]
+            if block["figure"]:
+                out += [figure_markdown(block["figure"]), ""]
+            if block["reconstruction"]:
+                out += ["> **수업 설명 재구성 · 추정** (교안 근거로 추정한 설명이며 실제 발언 인용이 아닙니다)", ">"]
+                out += [f"> {line}" if line.strip() else ">" for line in block["reconstruction"].strip().split("\n")]
+                out.append("")
 
-    if len(note["concept_order"]) > 1:
-        flow = " → ".join(names.get(cid, cid) for cid in note["concept_order"])
-        out += ["**개념 흐름:** " + flow, ""]
-
-    for entry in note["entries"]:
-        cid = entry["concept_id"]
-        out += ["---", "", f"# {entry['title']}", ""]
-        for number, section in enumerate(entry["sections"], start=1):
-            title = SECTION_TITLES[section["key"]]
-            label = "" if section["status"] == "observed" else f" `[{STATUS_LABELS_KO[section['status']]}]`"
-            out += [f"## {number}. {title}{label}", "", section["body_markdown"].strip(), ""]
-            if section["key"] == "professor":
-                cited = []
-                for ref in section["refs"]:
-                    p = emphasis.get(ref)
-                    if not p:
-                        continue
-                    where = _locations([source_of_chunk[ev["chunk_id"]] for ev in p["evidence"] if ev["chunk_id"] in source_of_chunk])
-                    who = "내 필기 기록" if p["attribution"] == "user_reported" else "교수님 자료"
-                    cited.append(f"{ref} ({who}{': ' + where if where else ''})")
-                if cited:
-                    out += [f"<sub>근거: {'; '.join(cited)}</sub>", ""]
-        ctx = ctx_by_id.get(cid)
-        if ctx and ctx["sources"]:
-            out += [f"<sub>이 개념의 자료 위치: {_locations(ctx['sources'])}</sub>", ""]
-
+    if note["summary"]:
+        out += ["---", "", "## 핵심 정리", ""] + [f"{i}. {s}" for i, s in enumerate(note["summary"], 1)] + [""]
+    exam = note["exam"]
+    if exam["true_false"] or exam["problems"]:
+        out += ["---", "", "## 시험 대비", ""]
+        for i, tf in enumerate(exam["true_false"], 1):
+            out += [f"**OX {i}.** {tf['statement_markdown']}", "",
+                    f"<details><summary>정답</summary>\n\n**{'참' if tf['answer'] else '거짓'}**. {tf['explanation_markdown']}\n\n</details>", ""]
+        for p in exam["problems"]:
+            out += [f"**{p['id']}** · {DIFFICULTY_LABELS[p['difficulty']]} · {EXAM_TYPE_LABELS[p['type']]}", "",
+                    p["prompt_markdown"], ""]
+            if p["figure"]:
+                out += [figure_markdown(p["figure"]), ""]
+            out += [f"*출제 근거: {p['why_likely']}*", "",
+                    f"<details><summary>답과 풀이</summary>\n\n**답** {p['answer_markdown']}\n\n**풀이**\n\n{p['solution_markdown']}\n\n</details>", ""]
     if note["open_questions"]:
-        out += ["---", "", "# 아직 확인이 필요한 부분", ""]
-        out += ["자료만으로는 확인할 수 없었던 부분입니다. 교안을 다시 보거나 교수님/조교에게 확인해 보세요.", ""]
-        for q in note["open_questions"]:
-            out.append(f"- **{q['question'].strip()}** — {q['reason'].strip()}")
-        out.append("")
-
+        out += ["---", "", "## 아직 확인이 필요한 부분", ""]
+        out += [f"- **{q['question']}** {q['reason']}" for q in note["open_questions"]] + [""]
     return "\n".join(out).rstrip() + "\n"

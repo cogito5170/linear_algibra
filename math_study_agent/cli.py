@@ -90,7 +90,7 @@ def cmd_run(args) -> int:
         return 1
 
     if args.out:
-        print(f"study note: {Path(args.out) / 'study_note.md'}")
+        print(f"study note: {Path(args.out) / 'study_note.html'} (Markdown: study_note.md)")
     else:
         print(result.markdown)
     summary = result.manifest["quality"]
@@ -136,7 +136,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser("run", help="analyse materials and write a study note")
     _add_source_args(run)
-    run.add_argument("--out", help="run directory for artifacts (JSON per stage, manifest, study_note.md)")
+    run.add_argument("--out", help="run directory for artifacts (JSON per stage, manifest, study_note.html/.md)")
     run.add_argument("--replay", metavar="DIR", help="replay recorded agent outputs instead of calling the API")
     run.add_argument("--no-record", action="store_true", help="do not save raw LLM requests/responses under --out/llm")
     run.add_argument("--model", default=DEFAULT_MODEL)

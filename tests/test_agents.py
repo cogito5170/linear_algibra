@@ -164,7 +164,7 @@ class TeacherAndEditorChecksTest(unittest.TestCase):
         }
         self.note_payload = {
             **self.teach_payload,
-            "schema": "math_note_request/1",
+            "schema": "math_note_request/2",
             "lesson": self.f["lesson"],
             "revision_feedback": [],
         }
@@ -181,7 +181,7 @@ class TeacherAndEditorChecksTest(unittest.TestCase):
 
     def test_teacher_cannot_invent_professor_points(self):
         self.lesson_for("C2")["professor_points"].append(
-            {"emphasis_ref": "P1", "kind": "emphasis", "paraphrase": "C3의 강조를 C2에 붙임"}
+            {"emphasis_ref": "P1", "kind": "emphasis", "paraphrase": "C3의 강조를 C2에 붙임", "detail": "d", "reconstruction": None}
         )
         issues = IntuitionTeacher(None).semantic_issues(self.f["lesson"], self.teach_payload)
         self.assertTrue(any("P1 is not in this concept's professor_context" in i for i in issues))
@@ -199,20 +199,39 @@ class TeacherAndEditorChecksTest(unittest.TestCase):
         issues = IntuitionTeacher(None).semantic_issues(self.f["lesson"], self.teach_payload)
         self.assertIn("no lesson for concept C4", issues)
 
-    def test_editor_professor_section_needs_verified_ref(self):
-        section = next(s for s in self.entry_for("C2")["sections"] if s["key"] == "professor")
-        section["refs"] = ["D2"]
+    def test_editor_professor_block_needs_verified_ref(self):
+        block = next(b for b in self.entry_for("C2")["blocks"] if b["kind"] == "professor")
+        block["refs"] = ["D2"]
         issues = NoteEditor(None).semantic_issues(self.f["note"], self.note_payload)
         self.assertTrue(any("must cite at least one verified P id" in i for i in issues))
 
-    def test_editor_section_order_and_refs(self):
-        sections = self.entry_for("C3")["sections"]
-        sections[0], sections[1] = sections[1], sections[0]
-        sections[2]["refs"].append("X1")
+    def test_editor_main_content_first_and_refs(self):
+        blocks = self.entry_for("C3")["blocks"]
+        why = next(b for b in blocks if b["kind"] == "why")
+        blocks.remove(why)
+        blocks.insert(0, why)
+        blocks[1]["refs"].append("X1")
         issues = NoteEditor(None).semantic_issues(self.f["note"], self.note_payload)
-        self.assertTrue(any("sections must follow the order" in i for i in issues))
+        self.assertTrue(any("come before the main content" in i for i in issues))
         self.assertTrue(any("unknown ref X1" in i for i in issues))
 
+    def test_editor_reconstruction_only_in_professor_blocks(self):
+        self.entry_for("C3")["blocks"][0]["reconstruction"] = "교수님은 이렇게 말했을 거예요."
+        issues = NoteEditor(None).semantic_issues(self.f["note"], self.note_payload)
+        self.assertTrue(any("reconstruction is only allowed in professor blocks" in i for i in issues))
+
+    def test_figures_are_validated(self):
+        figure = self.lesson_for("C3")["figures"][0]
+        figure["steps"][1]["highlight"].append({"row": 5, "col": 0, "role": "pivot"})
+        figure["steps"][1]["row_ops"] = ["R_1"]
+        issues = IntuitionTeacher(None).semantic_issues(self.f["lesson"], self.teach_payload)
+        self.assertTrue(any("outside the 2x2 matrix" in i for i in issues))
+        self.assertTrue(any("one entry per row" in i for i in issues))
+
+    def test_teacher_proof_refs_must_exist(self):
+        self.lesson_for("C2")["proofs"][0]["theorem_ref"] = "T9"
+        issues = IntuitionTeacher(None).semantic_issues(self.f["lesson"], self.teach_payload)
+        self.assertTrue(any("unknown theorem_ref T9" in i for i in issues))
 
 if __name__ == "__main__":
     unittest.main()

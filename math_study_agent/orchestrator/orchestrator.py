@@ -2,11 +2,11 @@
 
     bundle ─► Material Analyst ─► [evidence guard] ─► Concept Mapper ─► [guard]
           ─► learning contexts ─► Intuition Teacher ─► Note Editor
-          ─► quality check (deterministic + reviewer) ─► revise? ─► Markdown
+          ─► quality check (deterministic + reviewer) ─► revise? ─► HTML + Markdown
 
 Each stage's output is schema-validated. A stage that fails stops the run with
 `PipelineError`; the run manifest records what happened. A note that fails the
-quality check is still returned but marked `needs_review`, and the Markdown
+quality check is still returned but marked `needs_review`, and the page
 starts with a visible warning.
 """
 
@@ -27,6 +27,7 @@ from .contexts import build_learning_contexts
 from .guards import verify_analysis, verify_concept_map
 from .quality import QualityReviewer, build_report, deterministic_checks, reviewer_checks, revision_feedback
 from .render import render_markdown
+from .render_html import render_html
 from .style import default_style_profile
 
 
@@ -121,7 +122,7 @@ class Orchestrator:
         artifacts["lesson"] = lesson
 
         note_request = {
-            "schema": "math_note_request/1",
+            "schema": "math_note_request/2",
             "title": bundle["title"],
             "style_profile": self.config.style_profile,
             "concept_map": concept_map,
@@ -154,6 +155,8 @@ class Orchestrator:
         artifacts["note"] = note
         artifacts["quality_report"] = report
         markdown = render_markdown(note, concept_map, contexts, quality_report=report)
+        page = render_html(note, concept_map, contexts, quality_report=report)
+        artifacts["study_note_html"] = page
         status = "ok" if report["passed"] else "needs_review"
         manifest.update(status=status, finished_at=datetime.now(timezone.utc).isoformat(), quality=report["summary"])
         self._save(out, artifacts, manifest, markdown)
@@ -164,7 +167,7 @@ class Orchestrator:
     def _quality(self, note, lesson, analysis, concept_map, contexts, guard_findings) -> dict:
         checks = list(guard_findings) + deterministic_checks(note, lesson, concept_map, contexts)
         if self.config.use_reviewer:
-            request = {"schema": "math_review_request/1", "analysis": analysis, "concept_map": concept_map, "note": note}
+            request = {"schema": "math_review_request/2", "analysis": analysis, "concept_map": concept_map, "note": note}
             try:
                 review = self.reviewer.run(request).output
             except AgentError as exc:
@@ -190,7 +193,11 @@ class Orchestrator:
             return
         out.mkdir(parents=True, exist_ok=True)
         for name, value in artifacts.items():
+            if name == "study_note_html":
+                continue
             (out / f"{name}.json").write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         if markdown is not None:
             (out / "study_note.md").write_text(markdown, encoding="utf-8")
+        if "study_note_html" in artifacts:
+            (out / "study_note.html").write_text(artifacts["study_note_html"], encoding="utf-8")

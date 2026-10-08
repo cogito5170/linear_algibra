@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-08T11:36:58.880994+00:00",
+  "started_at": "2026-10-08T12:22:05.786552+00:00",
   "bundle_id": "la-lec03",
   "stages": [
     {
@@ -10,31 +10,11 @@
     {
       "stage": "material_analyst",
       "status": "ok",
-      "seconds": 0.01,
+      "seconds": 0.005,
       "attempts": [
         {
           "attempt": 1,
           "model": "replay:material_analyst.json",
-          "usage": {},
-          "outcome": "ok",
-          "errors": [],
-          "seconds": 0.009
-        }
-      ]
-    },
-    {
-      "stage": "evidence_guard:analysis",
-      "status": "ok",
-      "seconds": 0.002
-    },
-    {
-      "stage": "concept_mapper",
-      "status": "ok",
-      "seconds": 0.011,
-      "attempts": [
-        {
-          "attempt": 1,
-          "model": "replay:concept_mapper.json",
           "usage": {},
           "outcome": "ok",
           "errors": [],
@@ -43,38 +23,43 @@
       ]
     },
     {
-      "stage": "evidence_guard:concept_map",
+      "stage": "evidence_guard:analysis",
       "status": "ok",
       "seconds": 0.001
     },
     {
-      "stage": "learning_contexts",
+      "stage": "concept_mapper",
       "status": "ok",
-      "seconds": 0.01
-    },
-    {
-      "stage": "intuition_teacher",
-      "status": "ok",
-      "seconds": 0.018,
+      "seconds": 0.007,
       "attempts": [
         {
           "attempt": 1,
-          "model": "replay:intuition_teacher.json",
+          "model": "replay:concept_mapper.json",
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.006
+          "seconds": 0.002
         }
       ]
     },
     {
-      "stage": "note_editor",
+      "stage": "evidence_guard:concept_map",
       "status": "ok",
-      "seconds": 0.024,
+      "seconds": 0.0
+    },
+    {
+      "stage": "learning_contexts",
+      "status": "ok",
+      "seconds": 0.007
+    },
+    {
+      "stage": "intuition_teacher",
+      "status": "ok",
+      "seconds": 0.014,
       "attempts": [
         {
           "attempt": 1,
-          "model": "replay:note_editor.json",
+          "model": "replay:intuition_teacher.json",
           "usage": {},
           "outcome": "ok",
           "errors": [],
@@ -83,13 +68,28 @@
       ]
     },
     {
+      "stage": "note_editor",
+      "status": "ok",
+      "seconds": 0.02,
+      "attempts": [
+        {
+          "attempt": 1,
+          "model": "replay:note_editor.json",
+          "usage": {},
+          "outcome": "ok",
+          "errors": [],
+          "seconds": 0.007
+        }
+      ]
+    },
+    {
       "stage": "quality_check",
       "status": "ok",
-      "seconds": 0.018
+      "seconds": 0.016
     }
   ],
   "status": "ok",
-  "finished_at": "2026-10-08T11:36:58.980933+00:00",
+  "finished_at": "2026-10-08T12:22:05.862904+00:00",
   "quality": {
     "errors": 0,
     "warnings": 0,

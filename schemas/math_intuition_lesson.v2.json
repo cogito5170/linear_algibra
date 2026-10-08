@@ -1,0 +1,716 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "math_intuition_lesson/2"
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "concept_id": {
+            "type": "string",
+            "pattern": "^C\\d+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "one_line_intuition": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why_needed": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "observed",
+                  "inferred",
+                  "uncertain"
+                ],
+                "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+              }
+            },
+            "required": [
+              "text",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "meaning": {
+            "type": "string",
+            "description": "무엇을 의미하는가 (수식 없이)",
+            "minLength": 1
+          },
+          "intuition": {
+            "type": "object",
+            "properties": {
+              "intuitive": {
+                "type": "string",
+                "description": "직관적으로는: ...",
+                "minLength": 1
+              },
+              "rigorous": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "엄밀하게는: ... (비유/직관이 단순화한 부분을 바로잡음)",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "analogy_caveat": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "비유가 성립하지 않는 지점",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "intuitive",
+              "rigorous",
+              "analogy_caveat"
+            ],
+            "additionalProperties": false
+          },
+          "connections": {
+            "type": "object",
+            "properties": {
+              "from_previous": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "to_next": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "concept_id": {
+                      "type": "string",
+                      "pattern": "^C\\d+$"
+                    },
+                    "relation": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "concept_id",
+                    "relation"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "from_previous",
+              "to_next",
+              "related"
+            ],
+            "additionalProperties": false
+          },
+          "example": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "setup": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "walkthrough": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "takeaway": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "example_ref": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^E\\d+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "title",
+                  "setup",
+                  "walkthrough",
+                  "takeaway",
+                  "example_ref"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formulas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "formula_ref": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^F\\d+$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "material",
+                    "supplementary"
+                  ],
+                  "description": "supplementary: 교안에 없는 보충 수식"
+                },
+                "latex": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "plain_meaning": {
+                  "type": "string",
+                  "description": "수식이 말하는 관계를 한 문장으로",
+                  "minLength": 1
+                },
+                "parts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "meaning": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "meaning"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "formula_ref",
+                "origin",
+                "latex",
+                "plain_meaning",
+                "parts"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "rigorous_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "필요한 경우에만: 조건, 정의역, 필요/충분조건 등",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "professor_points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "emphasis_ref": {
+                  "type": "string",
+                  "pattern": "^P\\d+$"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "emphasis",
+                    "explanation",
+                    "warning"
+                  ]
+                },
+                "paraphrase": {
+                  "type": "string",
+                  "description": "자료에 실제로 있는 강조 내용",
+                  "minLength": 1
+                },
+                "detail": {
+                  "type": "string",
+                  "description": "이 강조가 왜 중요한지, 무엇을 정확히 알아야 하는지 자세히",
+                  "minLength": 1
+                },
+                "reconstruction": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "수업에서 교수님이 했을 법한 설명을 재구성한 것. 인용이 아니라 추정이며 렌더링 시 그렇게 표시된다",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "emphasis_ref",
+                "kind",
+                "paraphrase",
+                "detail",
+                "reconstruction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pitfalls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "basis_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "observed",
+                    "inferred",
+                    "uncertain"
+                  ],
+                  "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                }
+              },
+              "required": [
+                "text",
+                "basis_refs",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "review_points": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "epistemic_notes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "observed",
+                    "inferred",
+                    "uncertain"
+                  ],
+                  "description": "observed: 자료에 실제로 있음 / inferred: 자료 구조로부터 합리적으로 추론 / uncertain: 자료만으로 판단 어려움"
+                }
+              },
+              "required": [
+                "text",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "proofs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "theorem_ref": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "statement": {
+                  "type": "string",
+                  "description": "증명할 명제",
+                  "minLength": 1
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "intuitive",
+                    "counterexample",
+                    "via_proposition",
+                    "direct"
+                  ],
+                  "description": "intuitive: 직관적 논증 / counterexample: 반례 / via_proposition: 앞의 명제로부터 / direct: 직접 계산"
+                },
+                "proof_markdown": {
+                  "type": "string",
+                  "description": "엄밀성보다 이해를 우선한 증명. 단계마다 한 줄.",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "theorem_ref",
+                "statement",
+                "method",
+                "proof_markdown"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "figures": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "row_reduction",
+                    "matrix",
+                    "lines_2d",
+                    "flow"
+                  ],
+                  "description": "row_reduction: 행렬 단계들 / matrix: 행렬 하나 강조 / lines_2d: ax+by=c 직선들 / flow: 단계·판정 흐름도"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "caption": {
+                  "type": "string"
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "matrix": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "description": "행 단위 원소. 숫자, 분수 '-7/2', '*', LaTeX 기호 가능"
+                      },
+                      "augmented_col": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "description": "첨가행렬 세로선이 이 열 앞에 그어진다 (0부터)",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "row_ops": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "이 단계를 만든 행연산, 행마다 LaTeX (예: 'R_2 - 2R_1'). 바뀌지 않은 행은 ''"
+                      },
+                      "highlight": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "row": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "col": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "role": {
+                              "type": "string",
+                              "enum": [
+                                "pivot",
+                                "eliminate",
+                                "free",
+                                "focus"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "row",
+                            "col",
+                            "role"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "단계 이름 (예: '전진단계 완료')"
+                      }
+                    },
+                    "required": [
+                      "matrix",
+                      "augmented_col",
+                      "row_ops",
+                      "highlight",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "row_reduction/matrix용"
+                },
+                "lines": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "a": {
+                        "type": "number"
+                      },
+                      "b": {
+                        "type": "number"
+                      },
+                      "c": {
+                        "type": "number"
+                      },
+                      "label": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "a",
+                      "b",
+                      "c",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "lines_2d용: ax + by = c"
+                },
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "flow용"
+                },
+                "edges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "to": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "label": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "description": "flow용"
+                }
+              },
+              "required": [
+                "kind",
+                "title",
+                "caption",
+                "steps",
+                "lines",
+                "nodes",
+                "edges"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "exam_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "true_false",
+                    "short_answer",
+                    "computation",
+                    "proof",
+                    "concept"
+                  ]
+                },
+                "difficulty": {
+                  "type": "string",
+                  "enum": [
+                    "basic",
+                    "standard",
+                    "advanced"
+                  ]
+                },
+                "prompt_markdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "answer_markdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "solution_markdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "why_likely": {
+                  "type": "string",
+                  "description": "왜 시험에 나올 만한가 (근거: 강조 표시, 빈칸, 반복된 예제 등)",
+                  "minLength": 1
+                },
+                "basis_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "type",
+                "difficulty",
+                "prompt_markdown",
+                "answer_markdown",
+                "solution_markdown",
+                "why_likely",
+                "basis_refs"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "concept_id",
+          "name",
+          "one_line_intuition",
+          "why_needed",
+          "meaning",
+          "intuition",
+          "connections",
+          "example",
+          "formulas",
+          "rigorous_note",
+          "professor_points",
+          "pitfalls",
+          "review_points",
+          "epistemic_notes",
+          "proofs",
+          "figures",
+          "exam_items"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "lessons"
+  ],
+  "additionalProperties": false,
+  "description": "Agent 3(Intuition Teacher)의 출력 v2: 증명, 교수님 설명 재구성(표시됨), 시각자료, 시험 대비 문항 추가",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:math-study-agent:schema:math_intuition_lesson:v2",
+  "title": "math_intuition_lesson/2"
+}

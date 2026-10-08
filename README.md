@@ -70,9 +70,27 @@ python3 -m math_study_agent run \
   --out runs/lec03
 ```
 
-결과는 `runs/lec03/study_note.md`에 생기고, 각 단계의 JSON(`analysis.json`, `concept_map.json`, `learning_contexts.json`, `lesson.json`, `note.json`, `quality_report.json`), 실행 기록(`manifest.json`), 모델 요청/응답 원문(`llm/`)이 함께 저장됩니다.
+결과는 `runs/lec03/study_note.html`(교재형 페이지)과 `study_note.md`에 생기고, 각 단계의 JSON(`analysis.json`, `concept_map.json`, `learning_contexts.json`, `lesson.json`, `note.json`, `quality_report.json`), 실행 기록(`manifest.json`), 모델 요청/응답 원문(`llm/`)이 함께 저장됩니다.
 
-예제의 실제 출력은 [`examples/linear_independence/output/study_note.md`](examples/linear_independence/output/study_note.md)에서 볼 수 있습니다.
+예제의 실제 출력은 [`examples/linear_independence/output/study_note.html`](examples/linear_independence/output/study_note.html)(수식은 MathJax로 렌더링)과 [`study_note.md`](examples/linear_independence/output/study_note.md)에서 볼 수 있습니다.
+
+## 노트 레이아웃 (v2)
+
+잘 알려진 수학 교재들의 공통 구조를 따릅니다.
+
+| 위치 | 내용 | 참고한 교재 관례 |
+|---|---|---|
+| 맨 앞 | 이 절의 목표, 핵심 요약, 개념 흐름 | Margalit–Rabinoff *Interactive Linear Algebra*의 Objectives |
+| 개념마다 (먼저) | 정의 · 정리 · 증명 · 계산 절차 상자, 예제와 그림 | 정의/정리 상자, Worked Examples (Strang) |
+| 개념마다 | 교수님 강조: 무엇을 왜 강조했는지 + 수업 설명 재구성(추정 표시) | |
+| 개념마다 (뒤에) | 주의, 그리고 "이해를 돕는 설명"(직관, 왜 배우는가, 연결) | Stewart의 여백 노트 |
+| 절 끝 | 핵심 정리 | Strang의 Review of the Key Ideas |
+| 절 끝 | 시험 대비: 참/거짓 개념 확인, 예상 문제와 풀이 | Lay의 Practice Problems, Anton·Lay의 True/False |
+
+- 행렬은 항상 행렬 모양으로 그립니다. 행 줄이기 과정은 단계별 행렬로 그리고, 바뀐 행 옆에 $R_2 \leftarrow R_2 - 2R_1$처럼 행연산을 적습니다. 선도 1(축)은 동그라미, 방금 0으로 만든 칸과 자유변수 열은 색으로 표시합니다.
+- 그림은 agent가 숫자 데이터(`figure`)로 주고 렌더러가 그립니다: 행 줄이기, 행렬 강조, 직선 그래프($ax + by = c$, 교점 표시), 판정 흐름도. 그림 데이터는 품질 검사에서 검증됩니다(행 길이, 행연산 개수, 강조 위치).
+- 수식은 MathJax(SVG)로 렌더링하고, 품질 검사가 `$` 짝, 중괄호, `\begin`/`\end`, `\left`/`\right` 짝을 확인합니다.
+- **교수님 설명 재구성**: 교수님이 강조한 부분(검증된 P 근거가 있는 것)에 한해, 수업에서 했을 법한 설명을 재구성합니다. 이것은 교수님 강조 상자 안에서만 허용되고, 항상 "수업 설명 재구성 · 추정, 실제 발언 인용이 아님"으로 표시됩니다.
 
 종료 코드: `0` 노트 완성, `2` 노트는 만들었지만 품질 검사 오류가 남아 **검토 필요**, `1` 실패.
 

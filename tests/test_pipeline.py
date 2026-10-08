@@ -12,10 +12,11 @@ from math_study_agent.schemas import validate
 from .helpers import RECORDED, fixtures, script_from_example
 
 
-def _without_why(note: dict, cid: str) -> dict:
+def _broken_latex(note: dict, cid: str) -> dict:
+    """A note that passes the editor's own checks but fails the final LaTeX check."""
     note = copy.deepcopy(note)
     entry = next(e for e in note["entries"] if e["concept_id"] == cid)
-    entry["sections"] = [s for s in entry["sections"] if s["key"] != "why"]
+    entry["blocks"][0]["body_markdown"] += " $\\begin{bmatrix} 1 & 2 $"
     return note
 
 
@@ -58,14 +59,14 @@ class PipelineTest(unittest.TestCase):
             "material_analyst": "math_material_bundle/1",
             "concept_mapper": "math_concept_mapping_request/1",
             "intuition_teacher": "math_teaching_request/1",
-            "note_editor": "math_note_request/1",
-            "quality_reviewer": "math_review_request/1",
+            "note_editor": "math_note_request/2",
+            "quality_reviewer": "math_review_request/2",
         }
         for request in llm.requests:
             self.assertIn(f'<input schema="{expected_inputs[request.agent]}">', request.user)
 
     def test_quality_failure_triggers_a_revision_with_feedback(self):
-        bad = _without_why(self.f["note"], "C2")
+        bad = _broken_latex(self.f["note"], "C2")
         llm = ScriptedLLM(
             script_from_example(note_editor=[bad, self.f["note"]], quality_reviewer=[self.f["review"]] * 2)
         )
@@ -73,12 +74,12 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(result.status, "ok")
         editor_calls = [r for r in llm.requests if r.agent == "note_editor"]
         self.assertEqual(len(editor_calls), 2)
-        self.assertIn("IN1.why_present", editor_calls[1].user)
+        self.assertIn("UR3.latex_well_formed", editor_calls[1].user)
         stages = [s["stage"] for s in result.manifest["stages"]]
         self.assertIn("note_editor:revision_1", stages)
 
     def test_unresolved_quality_errors_mark_note_for_review(self):
-        bad = _without_why(self.f["note"], "C2")
+        bad = _broken_latex(self.f["note"], "C2")
         llm = ScriptedLLM(script_from_example(note_editor=[bad, bad], quality_reviewer=[self.f["review"]] * 2))
         result = Orchestrator(llm).run(self.f["bundle"])
         self.assertEqual(result.status, "needs_review")
