@@ -48,6 +48,14 @@ body, .page { --font-body: "IBM Plex Sans KR", "Noto Sans KR", "Noto Sans CJK KR
 /* Small boxes stay whole; long ones (examples, proofs, professor notes) may break between lines. */
 .b-definition, .b-theorem, .b-warning, .b-intuition, .b-why, .b-connection, .b-recipe,
 .q, .panel, .rr-row, .flowchart, .fig-grid .block, table, .mat-wrap { break-inside: avoid; }
+/* Chromium does not fragment grid containers and scroll boxes cleanly across pages: content that
+   crossed a page break was drawn over the next block. In print, lay the page out as plain blocks and
+   let scroll wrappers grow, and keep each figure on one page. */
+.page, .concept { display: block; }
+.page > * + * { margin-top: 16px; }
+.concept > * + * { margin-top: 14px; }
+.fig [style*="overflow"], .display-math, .table-wrap, .rr { overflow: visible !important; }
+.fig, svg.sch, svg.plot { break-inside: avoid; }
 h1, h2, h3, .concept-head, .block-head, .fig-title, .rr-label, .support-label { break-after: avoid; }
 .fig-grid { grid-template-columns: repeat(3, 1fr); }
 .fig-grid .plot { width: 100%; }
