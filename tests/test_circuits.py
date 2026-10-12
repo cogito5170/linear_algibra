@@ -91,6 +91,17 @@ class SchematicTest(unittest.TestCase):
         self.assertIn("≫", edges)
         self.assertIn("$V_{in}$", html)  # node labels still go through MathJax / MathML
 
+    def test_vector_plot_uses_equal_scale_and_arrows(self):
+        from math_study_agent.circuit_figures import plot_svg
+        import re as _re
+        vec = _figure("plot", series=[{"label": "u", "xs": [0, 3], "ys": [0, 0], "style": "solid"},
+                                      {"label": "v", "xs": [0, 0], "ys": [0, 1], "style": "solid"}], marks=[])
+        svg = plot_svg(vec)
+        self.assertEqual(svg.count("<polygon"), 2)  # one arrowhead per vector
+        lines = _re.findall(r'<polyline points="([\d.]+),([\d.]+) ([\d.]+),([\d.]+)"', svg)
+        (ux0, uy0, ux1, _), (vx0, vy0, _, vy1) = [tuple(map(float, l)) for l in lines]
+        self.assertAlmostEqual((ux1 - ux0) / 3, (vy0 - vy1) / 1, delta=0.5)  # same pixels per unit on x and y
+
     def test_plot(self):
         good = _figure("plot", x_label="V_{in}", y_label="I_D",
                        series=[{"label": "", "xs": [0, 1, 2], "ys": [0, 1, 4], "style": "solid"}], marks=[])

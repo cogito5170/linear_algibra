@@ -449,13 +449,27 @@ def plot_svg(figure: dict) -> str:
     series = figure["series"]
     xs = [v for s in series for v in s["xs"]] + [m["x"] for m in figure["marks"]]
     ys = [v for s in series for v in s["ys"]] + [m["y"] for m in figure["marks"]]
+    # A plot made only of two-point series is a vector diagram: arrows from tail to tip,
+    # the origin in view and the same scale on both axes, so right angles look right.
+    vector = bool(series) and all(len(s["xs"]) == 2 for s in series)
     x0, x1 = min(xs), max(xs)
     y0, y1 = min(ys), max(ys)
-    if y1 - y0 < 1e-12:
-        y0, y1 = y0 - 1, y1 + 1
-    pad = (y1 - y0) * 0.08
-    y0, y1 = y0 - pad, y1 + pad
     w, h, left, right, top, bottom = 400, 250, 46, 16, 14, 38
+    if vector:
+        h = 300
+        x0, x1, y0, y1 = min(x0, 0), max(x1, 0), min(y0, 0), max(y1, 0)
+        pad = 0.12 * max(x1 - x0, y1 - y0, 1e-9)
+        x0, x1, y0, y1 = x0 - pad, x1 + pad, y0 - pad, y1 + pad
+        pw, ph = w - left - right, h - top - bottom
+        scale = min(pw / (x1 - x0), ph / (y1 - y0))
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        x0, x1 = cx - pw / scale / 2, cx + pw / scale / 2
+        y0, y1 = cy - ph / scale / 2, cy + ph / scale / 2
+    else:
+        if y1 - y0 < 1e-12:
+            y0, y1 = y0 - 1, y1 + 1
+        pad = (y1 - y0) * 0.08
+        y0, y1 = y0 - pad, y1 + pad
 
     def X(v: float) -> float:
         return left + (v - x0) / (x1 - x0 or 1) * (w - left - right)
@@ -480,6 +494,20 @@ def plot_svg(figure: dict) -> str:
     for i, s in enumerate(series):
         pts = " ".join(f"{X(a):.1f},{Y(b):.1f}" for a, b in zip(s["xs"], s["ys"]))
         parts.append(f'<polyline points="{pts}" style="fill:none;stroke:{colors[i % 4]};stroke-width:2.4;{dashes[s["style"]]}"/>')
+        if vector:
+            (ax0, ax1), (ay0, ay1) = (X(v) for v in s["xs"]), (Y(v) for v in s["ys"])
+            dx, dy = ax1 - ax0, ay1 - ay0
+            n = math.hypot(dx, dy)
+            if n > 1:
+                ux, uy = dx / n, dy / n
+                bx, by = ax1 - ux * 10, ay1 - uy * 10
+                parts.append(f'<polygon points="{ax1:.1f},{ay1:.1f} {bx - uy * 4.5:.1f},{by + ux * 4.5:.1f} '
+                             f'{bx + uy * 4.5:.1f},{by - ux * 4.5:.1f}" style="fill:{colors[i % 4]}"/>')
+                if s["label"]:
+                    lx, ly = ax1 + ux * 8, ay1 + uy * 8 + 4
+                    anchor = "start" if ux >= -0.2 else "end"
+                    parts.append(f'<text class="lbl" x="{lx:.1f}" y="{ly:.1f}" text-anchor="{anchor}" '
+                                 f'style="fill:{colors[i % 4]}">{svg_text(s["label"])}</text>')
     for m in figure["marks"]:
         parts.append(f'<circle cx="{X(m["x"]):.1f}" cy="{Y(m["y"]):.1f}" r="4" style="fill:var(--ink)"/>')
         anchor = "end" if X(m["x"]) > w * 0.7 else "start"
@@ -491,7 +519,7 @@ def plot_svg(figure: dict) -> str:
     parts.append("</svg>")
     legend = "".join(
         f'<div><span class="legend-dot" style="background:{colors[i % 4]}"></span>{svg_label_html(s["label"])}</div>'
-        for i, s in enumerate(series) if s["label"]
+        for i, s in enumerate(series) if s["label"] and not vector
     )
     return f'<div style="overflow-x:auto">{"".join(parts)}</div>' + (f'<div class="fig-caption">{legend}</div>' if legend else "")
 
