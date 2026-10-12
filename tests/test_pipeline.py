@@ -58,9 +58,9 @@ class PipelineTest(unittest.TestCase):
         expected_inputs = {
             "material_analyst": "math_material_bundle/1",
             "concept_mapper": "math_concept_mapping_request/1",
-            "intuition_teacher": "math_teaching_request/1",
-            "note_editor": "math_note_request/2",
-            "quality_reviewer": "math_review_request/2",
+            "intuition_teacher": "math_teaching_request/2",
+            "note_editor": "math_note_request/3",
+            "quality_reviewer": "math_review_request/3",
         }
         for request in llm.requests:
             self.assertIn(f'<input schema="{expected_inputs[request.agent]}">', request.user)

@@ -688,56 +688,121 @@ BLOCK_KINDS = [
 ]
 # Blocks that carry the main content of a concept. Supporting blocks
 # (intuition, why, connection) may only appear after the first of these.
-MAIN_BLOCK_KINDS = ["definition", "theorem", "recipe", "explanation"]
+# "board" exists only from v3 on (a reconstructed derivation is main content).
+MAIN_BLOCK_KINDS = ["definition", "theorem", "recipe", "explanation", "board"]
 SUPPORT_BLOCK_KINDS = ["intuition", "why", "connection"]
 
+# v3 additions: subject domains, circuit figures and derivation methods, board reconstructions.
+DOMAINS = ["math", "circuits"]
+FIGURE_KINDS_V3 = FIGURE_KINDS + ["schematic", "plot"]
+PROOF_METHODS_V3 = PROOF_METHODS + ["small_signal", "kcl_kvl", "limit_check", "known_result"]
+BLOCK_KINDS_V3 = BLOCK_KINDS + ["board"]
+SCHEMATIC_ELEMENTS = [
+    "wire",
+    "resistor",
+    "capacitor",
+    "isource",
+    "vsource",
+    "vccs",
+    "nmos",
+    "pmos",
+    "npn",
+    "pnp",
+    "opamp",
+    "ground",
+    "vdd",
+    "port",
+    "dot",
+    "label",
+    "arrow",
+    "box",
+]
+ELEMENT_ROLES = ["normal", "focus", "signal", "muted"]
+SERIES_STYLES = ["solid", "dashed", "dotted"]
+BOARD_CONFIDENCE = ["high", "medium", "low"]
 
-def figure_schema() -> Schema:
-    """Data for a figure the renderer draws. Numbers, not pictures, so it can be checked."""
+
+def schematic_element() -> Schema:
     return obj(
         {
-            "kind": enum(
-                FIGURE_KINDS,
-                "row_reduction: 행렬 단계들 / matrix: 행렬 하나 강조 / lines_2d: ax+by=c 직선들 / flow: 단계·판정 흐름도",
+            "type": enum(
+                SCHEMATIC_ELEMENTS,
+                "wire: 꺾은선 / resistor·capacitor·isource·vsource·vccs: 두 단자 소자(points=[시작, 끝], 전류 화살표는 시작→끝, "
+                "vsource는 시작이 +) / nmos·pmos·npn·pnp: points=[몸체 중심], 단자는 위(D/C, pmos·pnp는 S/E)=(x+1,y-1), "
+                "아래=(x+1,y+1), 게이트·베이스=(x-1,y) (mirror면 x 방향 반전) / opamp: points=[중심], 입력 −=(x-1,y-0.5), "
+                "+=(x-1,y+0.5), 출력=(x+1,y) / ground·vdd·port·dot·label: points=[위치] / arrow: points=[꼬리, 머리] / "
+                "box: points=[모서리, 반대 모서리] 점선 영역",
             ),
-            "title": string(),
-            "caption": string(),
-            "steps": arr(
-                obj(
-                    {
-                        "matrix": arr(arr(string()), "행 단위 원소. 숫자, 분수 '-7/2', '*', LaTeX 기호 가능"),
-                        "augmented_col": nullable(integer("첨가행렬 세로선이 이 열 앞에 그어진다 (0부터)", minimum=0)),
-                        "row_ops": arr(string(), "이 단계를 만든 행연산, 행마다 LaTeX (예: 'R_2 - 2R_1'). 바뀌지 않은 행은 ''"),
-                        "highlight": arr(
-                            obj(
-                                {
-                                    "row": integer(minimum=0),
-                                    "col": integer(minimum=0),
-                                    "role": enum(HIGHLIGHT_ROLES),
-                                }
-                            )
-                        ),
-                        "label": string("단계 이름 (예: '전진단계 완료')"),
-                    }
-                ),
-                "row_reduction/matrix용",
-            ),
-            "lines": arr(
-                obj({"a": number(), "b": number(), "c": number(), "label": string()}),
-                "lines_2d용: ax + by = c",
-            ),
-            "nodes": arr(obj({"id": text(), "label": text()}), "flow용"),
-            "edges": arr(obj({"from": text(), "to": text(), "label": string()}), "flow용"),
+            "points": arr(arr(number()), "격자 좌표 [x, y]. y는 아래로 증가, 0.5 단위"),
+            "label": string("기호 (예: 'M_1', 'R_D', 'g_{m1} v_1', 'V_{out}', 'R_{out}')"),
+            "mirror": boolean("트랜지스터·op amp는 좌우 반전, 두 단자 소자·port·label은 라벨을 반대쪽에"),
+            "role": enum(ELEMENT_ROLES, "focus: 지금 설명하는 부분 / signal: 신호·테스트 소스 / muted: 0이 되어 지운 부분(점선)"),
         }
     )
 
 
-def proof_item() -> Schema:
+def figure_schema(version: int = 2) -> Schema:
+    """Data for a figure the renderer draws. Numbers, not pictures, so it can be checked."""
+    props: dict[str, Schema] = {
+        "kind": enum(
+            FIGURE_KINDS if version < 3 else FIGURE_KINDS_V3,
+            "row_reduction: 행렬 단계들 / matrix: 행렬 하나 강조 / lines_2d: ax+by=c 직선들 / flow: 단계·판정 흐름도"
+            + ("" if version < 3 else " / schematic: 회로도(elements) / plot: 곡선 그래프(series)"),
+        ),
+        "title": string(),
+        "caption": string(),
+        "steps": arr(
+            obj(
+                {
+                    "matrix": arr(arr(string()), "행 단위 원소. 숫자, 분수 '-7/2', '*', LaTeX 기호 가능"),
+                    "augmented_col": nullable(integer("첨가행렬 세로선이 이 열 앞에 그어진다 (0부터)", minimum=0)),
+                    "row_ops": arr(string(), "이 단계를 만든 행연산, 행마다 LaTeX (예: 'R_2 - 2R_1'). 바뀌지 않은 행은 ''"),
+                    "highlight": arr(
+                        obj(
+                            {
+                                "row": integer(minimum=0),
+                                "col": integer(minimum=0),
+                                "role": enum(HIGHLIGHT_ROLES),
+                            }
+                        )
+                    ),
+                    "label": string("단계 이름 (예: '전진단계 완료')"),
+                }
+            ),
+            "row_reduction/matrix용",
+        ),
+        "lines": arr(
+            obj({"a": number(), "b": number(), "c": number(), "label": string()}),
+            "lines_2d용: ax + by = c",
+        ),
+        "nodes": arr(obj({"id": text(), "label": text()}), "flow용"),
+        "edges": arr(obj({"from": text(), "to": text(), "label": string()}), "flow용"),
+    }
+    if version >= 3:
+        props["elements"] = arr(schematic_element(), "schematic용")
+        props["x_label"] = string("plot용 가로축 이름")
+        props["y_label"] = string("plot용 세로축 이름")
+        props["series"] = arr(
+            obj({"label": string(), "xs": arr(number()), "ys": arr(number()), "style": enum(SERIES_STYLES)}),
+            "plot용 곡선 (xs, ys 길이 같음)",
+        )
+        props["marks"] = arr(obj({"x": number(), "y": number(), "label": string()}), "plot용 표시 점")
+    return obj(props)
+
+
+def proof_item(version: int = 2) -> Schema:
+    methods = PROOF_METHODS if version < 3 else PROOF_METHODS_V3
+    described = "intuitive: 직관적 논증 / counterexample: 반례 / via_proposition: 앞의 명제로부터 / direct: 직접 계산"
+    if version >= 3:
+        described += (
+            " / small_signal: 소신호 등가회로로 유도 / kcl_kvl: 회로 법칙 직접 적용 / "
+            "limit_check: 극한·특수 경우로 확인 / known_result: 앞에서 구한 결과 재사용"
+        )
     return obj(
         {
             "theorem_ref": nullable(string(pattern=THEOREM_ID)),
             "statement": text("증명할 명제"),
-            "method": enum(PROOF_METHODS, "intuitive: 직관적 논증 / counterexample: 반례 / via_proposition: 앞의 명제로부터 / direct: 직접 계산"),
+            "method": enum(methods, described),
             "proof_markdown": text("엄밀성보다 이해를 우선한 증명. 단계마다 한 줄."),
         }
     )
@@ -757,7 +822,19 @@ def exam_item() -> Schema:
     )
 
 
-def lesson_schema_v2() -> Schema:
+def board_note() -> Schema:
+    return obj(
+        {
+            "refs": arr(string(), "판서가 있었을 교안 항목 id (예제 E, 공식 F, 정리 T 등)"),
+            "title": text("예: '예제 5 풀이: 출력 저항 유도'"),
+            "content_markdown": text("복원한 판서 내용: 유도 단계, 중간 결과, 답"),
+            "basis": text("왜 이렇게 추정했는가 (교안의 빈칸, 결과식, 같은 교재의 표준 유도 등)"),
+            "confidence": enum(BOARD_CONFIDENCE),
+        }
+    )
+
+
+def lesson_schema_v2(version: int = 2) -> Schema:
     schema = lesson_schema()
     props = schema["properties"]
     props["professor_points"] = arr(
@@ -773,9 +850,11 @@ def lesson_schema_v2() -> Schema:
             }
         )
     )
-    props["proofs"] = arr(proof_item())
-    props["figures"] = arr(figure_schema())
+    props["proofs"] = arr(proof_item(version))
+    props["figures"] = arr(figure_schema(version))
     props["exam_items"] = arr(exam_item())
+    if version >= 3:
+        props["board_notes"] = arr(board_note(), "교안에 빈칸·결과만 있고 판서로 채워졌을 내용의 복원 (추정)")
     schema["required"] = list(props)
     return schema
 
@@ -783,6 +862,23 @@ def lesson_schema_v2() -> Schema:
 INTUITION_LESSON_V2 = obj(
     {"schema": const("math_intuition_lesson/2"), "lessons": arr(lesson_schema_v2())},
     "Agent 3(Intuition Teacher)의 출력 v2: 증명, 교수님 설명 재구성(표시됨), 시각자료, 시험 대비 문항 추가",
+)
+
+INTUITION_LESSON_V3 = obj(
+    {"schema": const("math_intuition_lesson/3"), "domain": enum(DOMAINS), "lessons": arr(lesson_schema_v2(3))},
+    "Agent 3의 출력 v3: v2 + 분야(domain), 판서 복원(board_notes), 회로도·그래프 그림, 회로 유도 방법",
+)
+
+TEACHING_REQUEST_V2 = obj(
+    {
+        "schema": const("math_teaching_request/2"),
+        "domain": enum(DOMAINS),
+        "title": string(),
+        "style_profile": STYLE_PROFILE_V1,
+        "concept_map": CONCEPT_MAP_V1,
+        "learning_contexts": arr(LEARNING_CONTEXT_V2),
+    },
+    "Agent 3의 입력 v2: v1 + 분야(domain)",
 )
 
 NOTE_REQUEST_V2 = obj(
@@ -797,74 +893,98 @@ NOTE_REQUEST_V2 = obj(
     }
 )
 
+NOTE_REQUEST_V3 = obj(
+    {
+        "schema": const("math_note_request/3"),
+        "domain": enum(DOMAINS),
+        "title": string(),
+        "style_profile": STYLE_PROFILE_V1,
+        "concept_map": CONCEPT_MAP_V1,
+        "lesson": INTUITION_LESSON_V3,
+        "learning_contexts": arr(LEARNING_CONTEXT_V2),
+        "revision_feedback": arr(revision_item()),
+    }
+)
 
-def note_block() -> Schema:
+
+def note_block(version: int = 2) -> Schema:
+    props: dict[str, Schema] = {
+        "kind": enum(BLOCK_KINDS if version < 3 else BLOCK_KINDS_V3),
+        "title": string("상자 제목 (예: '정의 1.2.3 기약 행사다리꼴')"),
+        "body_markdown": string(),
+        "refs": arr(string()),
+        "status": enum(EPISTEMIC_STATUSES + ["mixed"]),
+        "figure": nullable(figure_schema(version)),
+        "reconstruction": nullable(text("professor 블록 전용: 교수님 설명 재구성(추정)")),
+        "proof_method": nullable(enum(PROOF_METHODS if version < 3 else PROOF_METHODS_V3)),
+    }
+    if version >= 3:
+        props["basis"] = nullable(text("board 블록 전용: 판서를 이렇게 복원한 근거"))
+    return obj(props)
+
+
+def study_note_schema(version: int = 2) -> Schema:
+    head: dict[str, Schema] = {"schema": const(f"math_study_note/{version}")}
+    if version >= 3:
+        head["domain"] = enum(DOMAINS)
     return obj(
         {
-            "kind": enum(BLOCK_KINDS),
-            "title": string("상자 제목 (예: '정의 1.2.3 기약 행사다리꼴')"),
-            "body_markdown": string(),
-            "refs": arr(string()),
-            "status": enum(EPISTEMIC_STATUSES + ["mixed"]),
-            "figure": nullable(figure_schema()),
-            "reconstruction": nullable(text("professor 블록 전용: 교수님 설명 재구성(추정)")),
-            "proof_method": nullable(enum(PROOF_METHODS)),
-        }
+            **head,
+            "title": text(),
+            "objectives": arr(text(), "이 절을 마치면 할 수 있어야 하는 것 (동사로 시작)"),
+            "key_ideas": arr(text(), "맨 앞에 보여 줄 핵심 요약 3~7개"),
+            "big_picture": text(),
+            "concept_order": arr(string(pattern=CONCEPT_ID)),
+            "entries": arr(
+                obj(
+                    {
+                        "concept_id": string(pattern=CONCEPT_ID),
+                        "title": text(),
+                        "depth": enum(["full", "brief"]),
+                        "blocks": arr(note_block(version)),
+                    }
+                )
+            ),
+            "summary": arr(text(), "절 끝의 핵심 정리 (Review of the key ideas)"),
+            "exam": obj(
+                {
+                    "true_false": arr(
+                        obj(
+                            {
+                                "statement_markdown": text(),
+                                "answer": boolean(),
+                                "explanation_markdown": text(),
+                                "refs": arr(string()),
+                            }
+                        )
+                    ),
+                    "problems": arr(
+                        obj(
+                            {
+                                "id": text(),
+                                "type": enum(EXAM_TYPES),
+                                "difficulty": enum(DIFFICULTIES),
+                                "prompt_markdown": text(),
+                                "answer_markdown": text(),
+                                "solution_markdown": text(),
+                                "why_likely": text(),
+                                "refs": arr(string()),
+                                "figure": nullable(figure_schema(version)),
+                            }
+                        )
+                    ),
+                }
+            ),
+            "open_questions": arr(obj({"question": text(), "reason": text(), "refs": arr(string())})),
+        },
+        "Agent 4(Note Editor)의 출력 v2: 교재형 레이아웃. 렌더링은 Orchestrator가 한다."
+        if version < 3
+        else "Agent 4의 출력 v3: v2 + 분야(domain), 판서 복원 상자(board), 회로도·그래프 그림",
     )
 
 
-STUDY_NOTE_V2 = obj(
-    {
-        "schema": const("math_study_note/2"),
-        "title": text(),
-        "objectives": arr(text(), "이 절을 마치면 할 수 있어야 하는 것 (동사로 시작)"),
-        "key_ideas": arr(text(), "맨 앞에 보여 줄 핵심 요약 3~7개"),
-        "big_picture": text(),
-        "concept_order": arr(string(pattern=CONCEPT_ID)),
-        "entries": arr(
-            obj(
-                {
-                    "concept_id": string(pattern=CONCEPT_ID),
-                    "title": text(),
-                    "depth": enum(["full", "brief"]),
-                    "blocks": arr(note_block()),
-                }
-            )
-        ),
-        "summary": arr(text(), "절 끝의 핵심 정리 (Review of the key ideas)"),
-        "exam": obj(
-            {
-                "true_false": arr(
-                    obj(
-                        {
-                            "statement_markdown": text(),
-                            "answer": boolean(),
-                            "explanation_markdown": text(),
-                            "refs": arr(string()),
-                        }
-                    )
-                ),
-                "problems": arr(
-                    obj(
-                        {
-                            "id": text(),
-                            "type": enum(EXAM_TYPES),
-                            "difficulty": enum(DIFFICULTIES),
-                            "prompt_markdown": text(),
-                            "answer_markdown": text(),
-                            "solution_markdown": text(),
-                            "why_likely": text(),
-                            "refs": arr(string()),
-                            "figure": nullable(figure_schema()),
-                        }
-                    )
-                ),
-            }
-        ),
-        "open_questions": arr(obj({"question": text(), "reason": text(), "refs": arr(string())})),
-    },
-    "Agent 4(Note Editor)의 출력 v2: 교재형 레이아웃. 렌더링은 Orchestrator가 한다.",
-)
+STUDY_NOTE_V2 = study_note_schema(2)
+STUDY_NOTE_V3 = study_note_schema(3)
 
 REVIEW_REQUEST_V2 = obj(
     {
@@ -872,6 +992,15 @@ REVIEW_REQUEST_V2 = obj(
         "analysis": MATERIAL_ANALYSIS_V1,
         "concept_map": CONCEPT_MAP_V1,
         "note": STUDY_NOTE_V2,
+    }
+)
+
+REVIEW_REQUEST_V3 = obj(
+    {
+        "schema": const("math_review_request/3"),
+        "analysis": MATERIAL_ANALYSIS_V1,
+        "concept_map": CONCEPT_MAP_V1,
+        "note": STUDY_NOTE_V3,
     }
 )
 
@@ -895,4 +1024,9 @@ ALL_SCHEMAS: dict[str, Schema] = {
     "math_note_request/2": NOTE_REQUEST_V2,
     "math_study_note/2": STUDY_NOTE_V2,
     "math_review_request/2": REVIEW_REQUEST_V2,
+    "math_teaching_request/2": TEACHING_REQUEST_V2,
+    "math_intuition_lesson/3": INTUITION_LESSON_V3,
+    "math_note_request/3": NOTE_REQUEST_V3,
+    "math_study_note/3": STUDY_NOTE_V3,
+    "math_review_request/3": REVIEW_REQUEST_V3,
 }

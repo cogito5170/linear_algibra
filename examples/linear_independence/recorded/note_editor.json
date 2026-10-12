@@ -1,5 +1,6 @@
 {
-  "schema": "math_study_note/2",
+  "schema": "math_study_note/3",
+  "domain": "math",
   "title": "3강. 일차결합, 생성(Span), 일차독립",
   "objectives": [
     "벡터들의 일차결합을 계산한다.",
@@ -36,7 +37,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "explanation",
@@ -48,7 +50,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -60,7 +63,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "connection",
@@ -73,7 +77,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         }
       ]
     },
@@ -93,7 +98,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "theorem",
@@ -105,7 +111,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "proof",
@@ -117,7 +124,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": "direct"
+          "proof_method": "direct",
+          "basis": null
         },
         {
           "kind": "explanation",
@@ -129,7 +137,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "example",
@@ -159,10 +168,16 @@
               }
             ],
             "nodes": [],
-            "edges": []
+            "edges": [],
+            "elements": [],
+            "x_label": "",
+            "y_label": "",
+            "series": [],
+            "marks": []
           },
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "professor",
@@ -174,7 +189,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": "span을 처음 보면 어렵게 느껴지는데요, 재료로 쓸 벡터 몇 개를 정해 두고 그걸로 섞어서 만들 수 있는 걸 전부 모았다고 생각하면 돼요.",
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -186,7 +202,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "why",
@@ -198,7 +215,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -210,7 +228,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "connection",
@@ -223,7 +242,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         }
       ]
     },
@@ -242,7 +262,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "theorem",
@@ -254,7 +275,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "proof",
@@ -266,7 +288,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": "direct"
+          "proof_method": "direct",
+          "basis": null
         },
         {
           "kind": "recipe",
@@ -278,7 +301,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "figure",
@@ -337,10 +361,16 @@
                 "to": "e",
                 "label": "없다"
               }
-            ]
+            ],
+            "elements": [],
+            "x_label": "",
+            "y_label": "",
+            "series": [],
+            "marks": []
           },
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "explanation",
@@ -352,7 +382,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "example",
@@ -427,10 +458,16 @@
             ],
             "lines": [],
             "nodes": [],
-            "edges": []
+            "edges": [],
+            "elements": [],
+            "x_label": "",
+            "y_label": "",
+            "series": [],
+            "marks": []
           },
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "professor",
@@ -445,7 +482,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": "모든 계수를 0으로 두면 영벡터가 나오는 건 당연하죠. 문제는 그것 말고 다른 방법이 있느냐예요. 그게 없으면 독립이에요. 쓸데없는 벡터가 없다는 게 무슨 뜻이냐면, 하나라도 빼면 만들 수 있는 게 줄어든다는 거예요. 영벡터가 하나라도 끼어 있으면 바로 종속이에요. 그 벡터 앞에 1을 붙이고 나머지는 0으로 두면 끝이니까요.",
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "warning",
@@ -460,7 +498,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "proof",
@@ -472,7 +511,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": "counterexample"
+          "proof_method": "counterexample",
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -484,7 +524,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "why",
@@ -497,7 +538,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -510,7 +552,8 @@
           "status": "mixed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "connection",
@@ -524,7 +567,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         }
       ]
     },
@@ -545,7 +589,8 @@
           "status": "uncertain",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "professor",
@@ -557,7 +602,8 @@
           "status": "observed",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "intuition",
@@ -569,7 +615,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         },
         {
           "kind": "connection",
@@ -582,7 +629,8 @@
           "status": "inferred",
           "figure": null,
           "reconstruction": null,
-          "proof_method": null
+          "proof_method": null,
+          "basis": null
         }
       ]
     }

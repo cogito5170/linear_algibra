@@ -6,8 +6,8 @@ from ..figures import figure_issues
 from ..schemas.definitions import MAIN_BLOCK_KINDS, SUPPORT_BLOCK_KINDS
 from .base import Agent
 
-# Blocks that may carry a figure (a flowchart fits a recipe, a matrix fits an explanation).
-FIGURE_BLOCK_KINDS = ("figure", "example", "recipe", "explanation")
+# Blocks that may carry a figure (a flowchart fits a recipe, a circuit fits a definition or derivation).
+FIGURE_BLOCK_KINDS = ("figure", "example", "recipe", "explanation", "board", "proof", "definition", "theorem")
 
 
 def known_refs(payload: dict) -> set[str]:
@@ -44,14 +44,29 @@ def block_order_issues(entry: dict, where: str) -> list[str]:
     return []
 
 
+def board_block_issues(block: dict, at: str) -> list[str]:
+    """A board block is a reconstruction: never observed, always with its basis and the slide item it completes."""
+    if block["kind"] != "board":
+        return [f"{at}: basis is only for board blocks"] if block["basis"] is not None else []
+    issues = []
+    if block["status"] == "observed":
+        issues.append(f"{at}: a board block is a reconstruction; its status cannot be observed")
+    if block["basis"] is None:
+        issues.append(f"{at}: a board block needs a basis (why it was reconstructed this way)")
+    if not block["refs"]:
+        issues.append(f"{at}: a board block must cite the slide item it completes")
+    return issues
+
+
 class NoteEditor(Agent):
     name = "note_editor"
-    input_schema = "math_note_request/2"
-    output_schema = "math_study_note/2"
+    input_schema = "math_note_request/3"
+    output_schema = "math_study_note/3"
     prompt_files = ("shared_principles", "shared_style", "note_editor")
     task_instruction = (
-        "아래 lesson을 교재형 공부 노트 `math_study_note/2`로 편집하세요. "
+        "아래 lesson을 교재형 공부 노트 `math_study_note/3`으로 편집하세요. "
         "개념마다 정의·정리·절차 같은 핵심 내용을 먼저, 직관과 동기는 뒤에 둡니다. "
+        "lesson의 board_notes는 board 상자로 옮기고 basis에 근거를 씁니다. domain은 입력과 같게 씁니다. "
         "revision_feedback이 있으면 모두 반영하세요."
     )
 
@@ -62,6 +77,8 @@ class NoteEditor(Agent):
         refs = known_refs(payload)
         prof = professor_refs(payload)
 
+        if output["domain"] != payload["domain"]:
+            issues.append(f"domain must be {payload['domain']!r} like the request")
         entry_ids = [e["concept_id"] for e in output["entries"]]
         if output["concept_order"] != entry_ids:
             issues.append("concept_order must list the entries' concept ids in the same order")
@@ -86,6 +103,7 @@ class NoteEditor(Agent):
                         issues.append(f"{at}: a professor block must cite at least one verified P id")
                 elif block["reconstruction"] is not None:
                     issues.append(f"{at}: reconstruction is only allowed in professor blocks")
+                issues += board_block_issues(block, at)
                 if block["kind"] == "proof" and block["proof_method"] is None:
                     issues.append(f"{at}: proof blocks need a proof_method")
                 if block["kind"] in FIGURE_BLOCK_KINDS and block["figure"] is not None:

@@ -156,7 +156,8 @@ class TeacherAndEditorChecksTest(unittest.TestCase):
         self.f = fixtures()
         contexts = build_learning_contexts(self.f["analysis"], self.f["concept_map"], self.f["bundle"])
         self.teach_payload = {
-            "schema": "math_teaching_request/1",
+            "schema": "math_teaching_request/2",
+            "domain": "math",
             "title": "",
             "style_profile": default_style_profile(),
             "concept_map": self.f["concept_map"],
@@ -164,7 +165,7 @@ class TeacherAndEditorChecksTest(unittest.TestCase):
         }
         self.note_payload = {
             **self.teach_payload,
-            "schema": "math_note_request/2",
+            "schema": "math_note_request/3",
             "lesson": self.f["lesson"],
             "revision_feedback": [],
         }

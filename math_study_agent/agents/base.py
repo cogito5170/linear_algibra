@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from importlib import resources
 from typing import Any
 
+from ..domains import get_domain
 from ..errors import AgentError, LLMError
 from ..llm.base import LLMClient, LLMRequest
 from ..schemas import assert_valid, validate
@@ -42,14 +43,16 @@ class Agent:
     prompt_files: tuple[str, ...] = ("shared_principles",)
     task_instruction: str = ""
 
-    def __init__(self, llm: LLMClient, *, max_attempts: int = 2):
+    def __init__(self, llm: LLMClient, *, max_attempts: int = 2, domain: str = "math"):
         self.llm = llm
         self.max_attempts = max(1, max_attempts)
+        self.domain = get_domain(domain)
 
     # -- hooks -------------------------------------------------------------
 
     def system_prompt(self) -> str:
-        return "\n\n".join(load_prompt(name) for name in self.prompt_files)
+        names = self.prompt_files + self.domain.prompt_files
+        return "\n\n".join(load_prompt(name) for name in names)
 
     def render_input(self, payload: dict) -> str:
         return json.dumps(payload, ensure_ascii=False, indent=1)

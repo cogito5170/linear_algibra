@@ -13,14 +13,15 @@ def _context_index(payload: dict) -> dict[str, dict]:
 
 class IntuitionTeacher(Agent):
     name = "intuition_teacher"
-    input_schema = "math_teaching_request/1"
-    output_schema = "math_intuition_lesson/2"
+    input_schema = "math_teaching_request/2"
+    output_schema = "math_intuition_lesson/3"
     prompt_files = ("shared_principles", "shared_style", "intuition_teacher")
     task_instruction = (
-        "아래 개념 구조와 개념별 learning context로 `math_intuition_lesson/2`를 작성하세요. "
+        "아래 개념 구조와 개념별 learning context로 `math_intuition_lesson/3`을 작성하세요. "
         "learning_flow 순서대로, 모든 개념에 대해 lesson을 하나씩 씁니다. "
         "정리에는 증명을, 교수님 강조에는 자세한 설명과 재구성을, 핵심 계산에는 시각자료를, "
-        "시험에 나올 만한 내용에는 예상 문항을 붙이세요."
+        "시험에 나올 만한 내용에는 예상 문항을, 교안에 빈칸이나 결과만 있는 곳에는 판서 복원(board_notes)을 붙이세요. "
+        "domain은 입력과 같게 씁니다."
     )
 
     def semantic_issues(self, output: dict, payload: dict) -> list[str]:
@@ -28,6 +29,8 @@ class IntuitionTeacher(Agent):
         concept_ids = {c["id"] for c in payload["concept_map"]["concepts"]}
         contexts = _context_index(payload)
         lessons = output["lessons"]
+        if output["domain"] != payload["domain"]:
+            issues.append(f"domain must be {payload['domain']!r} like the request")
         covered = [lesson["concept_id"] for lesson in lessons]
 
         for cid in concept_ids - set(covered):
@@ -84,5 +87,11 @@ class IntuitionTeacher(Agent):
                 for ref in item["basis_refs"]:
                     if ref not in known:
                         issues.append(f"{where}.exam_items: unknown basis ref {ref}")
+            for note in lesson["board_notes"]:
+                if not note["refs"]:
+                    issues.append(f"{where}.board_notes: '{note['title']}' must cite the slide item it completes")
+                for ref in note["refs"]:
+                    if ref not in known:
+                        issues.append(f"{where}.board_notes: unknown ref {ref}")
         return issues
 

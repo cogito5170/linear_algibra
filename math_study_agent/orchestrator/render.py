@@ -1,4 +1,4 @@
-"""Markdown rendering of a `math_study_note/2` (fallback next to the HTML page).
+"""Markdown rendering of a `math_study_note/3` (fallback next to the HTML page).
 
 The HTML page (`render_html`) is the primary output. This Markdown version
 keeps the same order and labels so the note is readable in any Markdown viewer.
@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from fractions import Fraction
 
+from ..domains import get_domain
 from ..epistemics import STATUS_LABELS_KO
+from ..schemas.upgrade import note_v2_to_v3
 from .render_html import DIFFICULTY_LABELS, EXAM_TYPE_LABELS, KIND_LABELS, PROOF_METHOD_LABELS
 
 
@@ -51,6 +53,11 @@ def figure_markdown(figure: dict) -> str:
     elif figure["kind"] == "flow":
         labels = {n["id"]: n["label"] for n in figure["nodes"]}
         out += [f"- {labels[e['from']]} → **{e['label']}** → {labels[e['to']]}" for e in figure["edges"]]
+    elif figure["kind"] == "schematic":
+        parts = [el["label"] for el in figure.get("elements", []) if el["label"] and el["type"] not in ("wire", "arrow", "box")]
+        out.append("*(회로도: HTML/PDF 노트에서 볼 수 있습니다" + (f" — {', '.join(f'${p}$' for p in parts)}" if parts else "") + ")*")
+    elif figure["kind"] == "plot":
+        out.append(f"*(그래프: 가로축 {figure['x_label']}, 세로축 {figure['y_label']} — HTML/PDF 노트에서 볼 수 있습니다)*")
     if figure["caption"]:
         out.append(f"*{figure['caption']}*")
     return "\n\n".join(out)
@@ -61,6 +68,8 @@ def _fmt(v: float) -> str:
 
 
 def render_markdown(note: dict, concept_map: dict, contexts: list[dict], *, quality_report: dict | None = None) -> str:
+    note = note_v2_to_v3(note)
+    labels = {**KIND_LABELS, **get_domain(note["domain"]).kind_labels}
     names = {c["id"]: c["name"] for c in concept_map["concepts"]}
     core = set(concept_map["core_concepts"])
     out = [f"# {note['title']}", ""]
@@ -83,13 +92,15 @@ def render_markdown(note: dict, concept_map: dict, contexts: list[dict], *, qual
             tag = "" if block["status"] == "observed" else f" `[{STATUS_LABELS_KO[block['status']]}]`"
             method = f" ({PROOF_METHOD_LABELS[block['proof_method']]})" if block["kind"] == "proof" and block["proof_method"] else ""
             title = f" · {block['title']}" if block["title"] else ""
-            out += [f"### {KIND_LABELS[block['kind']]}{title}{method}{tag}", ""]
+            out += [f"### {labels[block['kind']]}{title}{method}{tag}", ""]
             if block["body_markdown"].strip():
                 out += [block["body_markdown"].strip(), ""]
             if block["kind"] == "proof":
                 out += ["∎", ""]
             if block["figure"]:
                 out += [figure_markdown(block["figure"]), ""]
+            if block["kind"] == "board" and block["basis"]:
+                out += [f"> **복원 근거** {block['basis']}", ""]
             if block["reconstruction"]:
                 out += ["> **수업 설명 재구성 · 추정** (교안 근거로 추정한 설명이며 실제 발언 인용이 아닙니다)", ">"]
                 out += [f"> {line}" if line.strip() else ">" for line in block["reconstruction"].strip().split("\n")]

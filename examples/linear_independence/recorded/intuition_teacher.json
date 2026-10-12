@@ -1,5 +1,6 @@
 {
-  "schema": "math_intuition_lesson/2",
+  "schema": "math_intuition_lesson/3",
+  "domain": "math",
   "lessons": [
     {
       "concept_id": "C1",
@@ -72,7 +73,8 @@
       "epistemic_notes": [],
       "proofs": [],
       "figures": [],
-      "exam_items": []
+      "exam_items": [],
+      "board_notes": []
     },
     {
       "concept_id": "C2",
@@ -184,7 +186,12 @@
             }
           ],
           "nodes": [],
-          "edges": []
+          "edges": [],
+          "elements": [],
+          "x_label": "",
+          "y_label": "",
+          "series": [],
+          "marks": []
         }
       ],
       "exam_items": [
@@ -200,7 +207,8 @@
             "P2"
           ]
         }
-      ]
+      ],
+      "board_notes": []
     },
     {
       "concept_id": "C3",
@@ -425,7 +433,12 @@
           ],
           "lines": [],
           "nodes": [],
-          "edges": []
+          "edges": [],
+          "elements": [],
+          "x_label": "",
+          "y_label": "",
+          "series": [],
+          "marks": []
         },
         {
           "kind": "flow",
@@ -476,7 +489,12 @@
               "to": "e",
               "label": "없다"
             }
-          ]
+          ],
+          "elements": [],
+          "x_label": "",
+          "y_label": "",
+          "series": [],
+          "marks": []
         }
       ],
       "exam_items": [
@@ -503,7 +521,8 @@
             "P4"
           ]
         }
-      ]
+      ],
+      "board_notes": []
     },
     {
       "concept_id": "C4",
@@ -557,7 +576,8 @@
       ],
       "proofs": [],
       "figures": [],
-      "exam_items": []
+      "exam_items": [],
+      "board_notes": []
     }
   ]
 }

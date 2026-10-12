@@ -4,14 +4,15 @@
 
 ## 입력
 
-`math_teaching_request/1`:
+`math_teaching_request/2`:
+- `domain`: 분야 (`math` 또는 `circuits`). 분야별 규칙이 이 프롬프트 뒤에 붙어 있으면 그것을 따릅니다.
 - `style_profile`: 독자 선호와 난이도 정책
 - `concept_map`: 개념 구조, 학습 순서, 핵심 개념
 - `learning_contexts`: 개념별 `math_learning_context/2` 패킷. 그 개념의 정의, 수식, 정리, 예제, 관계, 교수님의 강조/설명/주의, 해석(why/intuition), 근거 상태, 미해결 질문이 들어 있습니다.
 
 ## 출력
 
-`math_intuition_lesson/2`. `concept_map.learning_flow` 순서대로 모든 개념에 대해 lesson 하나씩.
+`math_intuition_lesson/3`. `domain`은 입력과 같게 쓰고, `concept_map.learning_flow` 순서대로 모든 개념에 대해 lesson 하나씩.
 
 각 lesson은 다음 순서의 사고를 담습니다:
 
@@ -34,13 +35,17 @@
 10. `pitfalls`: 헷갈리기 쉬운 부분. 교수님의 warning(P id)이나 정의의 조건에서 나온 것이면 `basis_refs`에 그 id를 넣고 observed, 일반적으로 학생들이 헷갈리는 지점이라 당신이 판단한 것이면 inferred.
 11. `review_points`: 복습할 때 스스로 확인할 질문 2~4개.
 12. `epistemic_notes`: 자료만으로 확실하지 않아 학생이 알아야 할 것 (learning context의 `open_questions`, 당신이 일반 지식으로 보충한 부분 등).
-13. `proofs`: 이 개념의 정리·명제마다 증명 하나. `theorem_ref`에 T id(자료의 정리가 아니면 null), `method`는 intuitive / counterexample / via_proposition / direct 중 하나. 반례로 "역은 성립하지 않는다"를 보이는 것도 좋습니다.
+13. `proofs`: 이 개념의 정리·명제마다 증명(회로에서는 유도) 하나. `theorem_ref`에 T id(자료의 정리가 아니면 null), `method`는 intuitive / counterexample / via_proposition / direct, 회로에서는 small_signal / kcl_kvl / limit_check / known_result도 씁니다. 반례로 "역은 성립하지 않는다"를 보이는 것도 좋습니다.
 14. `figures`: 시각자료를 적극적으로 만듭니다. 그림은 숫자 데이터로 주고 렌더러가 그립니다.
    - `row_reduction`: 행렬 계산 과정. 각 step에 행렬, 첨가행렬 세로선 위치(`augmented_col`), 이번 단계에서 바뀐 행 옆에 쓸 행연산(`row_ops`, 예: `R_2 - 2R_1`), 강조(`highlight`: pivot = 선도 1, eliminate = 방금 0으로 만든 칸, free = 자유변수 열)를 넣습니다. 숫자는 반드시 직접 계산해 확인합니다.
    - `matrix`: 행렬 하나에서 위치를 강조 (축 위치, 자유변수 열 등).
    - `lines_2d`: 두 변수 연립방정식을 직선 `ax + by = c`로 그립니다 (해가 하나 / 없음 / 무수히 많음).
    - `flow`: 절차나 판정 순서 (예: 해의 존재·유일성 판정).
+   - `schematic`: 회로도. `elements`에 격자 좌표로 소자를 놓습니다 (분야 규칙 참고). 모든 단자가 다른 소자나 도선에 닿아야 합니다.
+   - `plot`: 곡선 그래프 (전달 특성, I–V 특성 등). `series`의 숫자는 식으로 직접 계산해 넣습니다.
+   그림 하나에 쓰지 않는 필드는 빈 배열이나 빈 문자열로 둡니다.
 15. `exam_items`: 시험에 나올 만한 문항. 교안의 강조 표시, 빈칸, 반복된 예제 유형, 정리를 근거로 고르고 `why_likely`에 그 근거를 씁니다. 계산 문항은 답과 풀이를 직접 검산합니다. 쉬운 것(basic)부터 심화(advanced)까지 섞습니다.
+16. `board_notes`: 교안에 문제·빈칸·결과식만 있고 풀이나 이유가 판서로 채워졌을 곳의 복원 (공통 원칙의 판서 복원 규칙). `refs`에 그 교안 항목 id, `content_markdown`에 유도 단계와 답, `basis`에 복원 근거, `confidence`에 확신 정도. 없으면 빈 배열.
 
 ## 설명할 때 기억할 것
 

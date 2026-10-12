@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-08T13:50:07.861121+00:00",
+  "started_at": "2026-10-12T01:16:17.392358+00:00",
   "bundle_id": "la-lec03",
   "stages": [
     {
@@ -10,7 +10,7 @@
     {
       "stage": "material_analyst",
       "status": "ok",
-      "seconds": 0.006,
+      "seconds": 0.005,
       "attempts": [
         {
           "attempt": 1,
@@ -45,17 +45,17 @@
     {
       "stage": "evidence_guard:concept_map",
       "status": "ok",
-      "seconds": 0.001
+      "seconds": 0.0
     },
     {
       "stage": "learning_contexts",
       "status": "ok",
-      "seconds": 0.009
+      "seconds": 0.008
     },
     {
       "stage": "intuition_teacher",
       "status": "ok",
-      "seconds": 0.018,
+      "seconds": 0.015,
       "attempts": [
         {
           "attempt": 1,
@@ -63,14 +63,14 @@
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.007
+          "seconds": 0.006
         }
       ]
     },
     {
       "stage": "note_editor",
       "status": "ok",
-      "seconds": 0.027,
+      "seconds": 0.022,
       "attempts": [
         {
           "attempt": 1,
@@ -78,18 +78,18 @@
           "usage": {},
           "outcome": "ok",
           "errors": [],
-          "seconds": 0.008
+          "seconds": 0.009
         }
       ]
     },
     {
       "stage": "quality_check",
       "status": "ok",
-      "seconds": 0.016
+      "seconds": 0.017
     }
   ],
   "status": "ok",
-  "finished_at": "2026-10-08T13:50:07.954239+00:00",
+  "finished_at": "2026-10-12T01:16:17.474316+00:00",
   "quality": {
     "errors": 0,
     "warnings": 0,

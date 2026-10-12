@@ -15,21 +15,25 @@ from __future__ import annotations
 import re
 
 from ..agents.base import Agent
-from ..agents.note_editor import block_order_issues, professor_refs
+from ..agents.note_editor import block_order_issues, board_block_issues, professor_refs
 from ..figures import figure_issues
 from ..schemas import assert_valid
+from ..schemas.upgrade import note_v2_to_v3
 
 PROFESSOR_WORD = re.compile(r"교수님|professor", re.IGNORECASE)
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?。])\s+|\n+")
 _MATH = re.compile(r"\$\$.*?\$\$|\$[^$]*\$", re.DOTALL)
 
+# Circuits: explanations give reasons ("~ 때문에 ~가 된다"), numeric answers carry units.
+CAUSAL = re.compile(r"때문|므로|따라서|그래서|그러므로|결과적으로|이유|덕분|→")
+UNIT = re.compile(r"(?:\\Omega|Ω|\\mathrm\{[^}]*\}|\\text\{[^}]*\}|\b(?:[kMmμun]?(?:V|A|W|S|F|Hz|dB))\b|\bk?ohm|배|μA/V\^?2|V\^\{-1\})")
 MAX_AVG_SENTENCE_CHARS = 90
 MAX_BRIEF_BLOCKS = 6
 
 
 class QualityReviewer(Agent):
     name = "quality_reviewer"
-    input_schema = "math_review_request/2"
+    input_schema = "math_review_request/3"
     output_schema = "math_quality_review/1"
     prompt_files = ("shared_principles", "shared_style", "quality_reviewer")
     task_instruction = (
@@ -99,6 +103,8 @@ def _texts(note: dict):
                 yield where + ".reconstruction", b["reconstruction"]
             if b["figure"]:
                 yield where + ".figure", b["figure"]["caption"]
+            if b.get("basis"):
+                yield where + ".basis", b["basis"]
     for i, tf in enumerate(note["exam"]["true_false"]):
         yield f"exam.tf[{i}]", tf["statement_markdown"] + "\n" + tf["explanation_markdown"]
     for p in note["exam"]["problems"]:
@@ -116,6 +122,7 @@ def _figures(note: dict):
 
 
 def deterministic_checks(note: dict, lesson: dict, concept_map: dict, contexts: list[dict]) -> list[dict]:
+    note = note_v2_to_v3(note)
     checks: list[dict] = []
     map_concepts = {c["id"]: c for c in concept_map["concepts"]}
     core = set(concept_map["core_concepts"])
@@ -139,6 +146,14 @@ def deterministic_checks(note: dict, lesson: dict, concept_map: dict, contexts: 
                     _check("SF2.reconstruction_scope", "source_fidelity", "error", ok,
                            f"{where}: 교수님 설명 재구성은 P 근거가 있는 교수님 강조 상자에만 쓸 수 있음", [where])
                 )
+
+    board_errors = [i for e in note["entries"] for n, b in enumerate(e["blocks"])
+                    for i in board_block_issues(b, f"{e['concept_id']}.{b['kind']}[{n}]")]
+    if board_errors or any(b["kind"] == "board" for e in note["entries"] for b in e["blocks"]):
+        checks.append(
+            _check("BD1.board_labeled", "source_fidelity", "error", not board_errors,
+                   "; ".join(board_errors[:5]) or "판서 복원은 추정으로 표시되고 근거와 교안 항목을 가짐", [])
+        )
 
     open_uncertainties = [u["id"] for ctx in contexts for u in ctx["open_questions"]]
     if open_uncertainties:
@@ -207,6 +222,25 @@ def deterministic_checks(note: dict, lesson: dict, concept_map: dict, contexts: 
         _check("LG2.follows_learning_flow", "logicality", "warning", [c for c in flow if c in position] == order,
                "노트 순서가 Concept Map의 learning_flow와 다름", order)
     )
+
+    # -- circuits: reasons and units ------------------------------------------------
+    if note["domain"] == "circuits":
+        for cid in concept_map["core_concepts"]:
+            entry = entries.get(cid)
+            if entry is None:
+                continue
+            body = "\n".join(b["body_markdown"] for b in entry["blocks"]
+                             if b["kind"] in ("explanation", "board", "proof", "theorem", "recipe"))
+            checks.append(
+                _check("CL1.causal_reasoning", "logicality", "warning", bool(CAUSAL.search(body)),
+                       f"{cid}: 핵심 개념은 '~ 때문에 ~가 된다'처럼 이유를 대며 설명해야 함", [cid])
+            )
+        no_unit = [p["id"] for p in note["exam"]["problems"]
+                   if p["type"] == "computation" and not UNIT.search(p["answer_markdown"])]
+        checks.append(
+            _check("UN1.answer_units", "mathematical_correctness", "warning", not no_unit,
+                   "계산 문제의 답에는 단위가 있어야 함" + (f" (단위 없음: {', '.join(no_unit)})" if no_unit else ""), no_unit)
+        )
 
     # -- exam prep -----------------------------------------------------------------
     checks.append(

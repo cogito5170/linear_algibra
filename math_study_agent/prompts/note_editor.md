@@ -4,9 +4,11 @@
 
 ## 입력
 
-`math_note_request/2`: style_profile, concept_map, lesson(`math_intuition_lesson/2`), learning_contexts, `revision_feedback`. `revision_feedback`이 비어 있지 않으면 이전 초안이 품질 검사에서 지적받은 내용입니다. 모든 항목을 해결한 새 노트 전체를 출력하세요.
+`math_note_request/3`: domain, style_profile, concept_map, lesson(`math_intuition_lesson/3`), learning_contexts, `revision_feedback`. `revision_feedback`이 비어 있지 않으면 이전 초안이 품질 검사에서 지적받은 내용입니다. 모든 항목을 해결한 새 노트 전체를 출력하세요.
 
-## 출력 구조 (`math_study_note/2`)
+## 출력 구조 (`math_study_note/3`)
+
+`domain`은 입력과 같게 씁니다.
 
 잘 알려진 교재들의 공통 구조를 따릅니다: 절의 목표 → 핵심 요약 → 개념별 본문(정의·정리·증명·절차·예제·그림) → 절 끝의 핵심 정리 → 연습/시험 대비.
 
@@ -30,12 +32,14 @@
 | recipe | 계산 절차(단계 번호 목록) |
 | explanation | 핵심 설명 |
 | example | 예제. 풀이 과정은 가능하면 `figure`(row_reduction 등)로 |
-| figure | 그림 단독 (흐름도, 직선 그림 등). 그림은 figure, example, recipe, explanation 블록에 붙일 수 있음 |
+| figure | 그림 단독 (흐름도, 직선 그림, 회로도, 그래프 등). 그림은 figure, example, recipe, explanation, board, proof, definition, theorem 블록에 붙일 수 있음 |
+| board | 판서 복원(추정). lesson의 board_notes를 옮깁니다. `status`는 inferred, `basis`에 복원 근거, `refs`에 교안 항목 id. 핵심 내용으로 취급됩니다 |
 | professor | 교수님 강조. 아래 참고 |
 | warning | 헷갈리기 쉬운 부분 |
 | intuition / why / connection | 직관, 왜 배우는가, 다른 개념과의 연결. **보조 설명이므로 핵심 블록 뒤에** |
 
-- 첫 번째 핵심 블록(definition / theorem / recipe / explanation)보다 앞에 intuition, why, connection을 두지 않습니다.
+- `basis`는 board 블록에만 쓰고, 다른 블록은 null입니다.
+- 첫 번째 핵심 블록(definition / theorem / recipe / explanation / board)보다 앞에 intuition, why, connection을 두지 않습니다.
 - 정리(theorem) 뒤에는 proof를 둡니다.
 - brief 개념은 블록 2~5개로 짧게.
 

@@ -6,6 +6,8 @@ not a drawing glitch: it is rejected before it reaches the note.
 
 from __future__ import annotations
 
+from .circuit_figures import plot_issues, schematic_issues
+
 
 def figure_issues(figure: dict, where: str) -> list[str]:
     issues: list[str] = []
@@ -52,4 +54,8 @@ def figure_issues(figure: dict, where: str) -> list[str]:
         for e in figure["edges"]:
             if e["from"] not in ids or e["to"] not in ids:
                 issues.append(f"{where}: edge {e['from']}->{e['to']} references an unknown node")
+    elif kind == "schematic":
+        issues += schematic_issues(figure, where)
+    elif kind == "plot":
+        issues += plot_issues(figure, where)
     return issues

@@ -1,4 +1,4 @@
-"""Textbook-style HTML rendering of a `math_study_note/2`.
+"""Textbook-style HTML rendering of a `math_study_note/3` (v2 notes are upgraded first).
 
 Layout follows the common structure of well-known math textbooks:
 objectives and key ideas up front (Margalit-Rabinoff "Objectives"),
@@ -17,7 +17,10 @@ import json
 import math
 from fractions import Fraction
 
+from ..circuit_figures import plot_svg, schematic_svg
+from ..domains import get_domain
 from ..epistemics import STATUS_LABELS_KO
+from ..schemas.upgrade import note_v2_to_v3
 from .mdlite import to_html
 
 MATHJAX = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"
@@ -39,12 +42,17 @@ KIND_LABELS = {
     "intuition": "직관",
     "why": "왜 배우는가",
     "connection": "개념 연결",
+    "board": "판서 복원 · 추정",
 }
 PROOF_METHOD_LABELS = {
     "intuitive": "직관적 논증",
     "counterexample": "반례",
     "via_proposition": "명제 이용",
     "direct": "직접 계산",
+    "small_signal": "소신호 등가회로",
+    "kcl_kvl": "KCL·KVL",
+    "limit_check": "극한 확인",
+    "known_result": "앞 결과 이용",
 }
 DIFFICULTY_LABELS = {"basic": "기본", "standard": "표준", "advanced": "심화"}
 EXAM_TYPE_LABELS = {
@@ -69,6 +77,7 @@ CSS = """
   --intu: #0b5f73; --intu-bg: #e3f5f9;
   --why: #4338ca; --why-bg: #ecebff;
   --conn: #0369a1; --conn-bg: #e5f2fb;
+  --board: #166534; --board-bg: #ecfbf1;
   --pivot: #1d4ed8; --pivot-ink: #ffffff; --elim: #c9eeda; --free: #ffe8a3;
   --c1: #1d4ed8; --c2: #c2410c; --c3: #047857;
   --font-display: "Noto Serif KR", "Apple SD Gothic Neo", serif;
@@ -81,6 +90,7 @@ CSS = """
   --def: #93b4ff; --def-bg: #172440; --thm: #cbb0ff; --thm-bg: #241a3d; --rec: #6ee0b4; --rec-bg: #10291f;
   --prof: #ffbe6b; --prof-bg: #2e2210; --warn: #ff9b8f; --warn-bg: #301a1a;
   --intu: #67d4e8; --intu-bg: #0f2a31; --why: #a5a8ff; --why-bg: #1c1c3d; --conn: #7cc4f2; --conn-bg: #12263a;
+  --board: #7ee2a0; --board-bg: #10261a;
   --pivot: #93b4ff; --pivot-ink: #0d1117; --elim: #1c4a35; --free: #4a3b12;
   --c1: #93b4ff; --c2: #ffa36b; --c3: #6ee0b4; color-scheme: dark; } }
 :root[data-theme="dark"] {
@@ -89,6 +99,7 @@ CSS = """
   --def: #93b4ff; --def-bg: #172440; --thm: #cbb0ff; --thm-bg: #241a3d; --rec: #6ee0b4; --rec-bg: #10291f;
   --prof: #ffbe6b; --prof-bg: #2e2210; --warn: #ff9b8f; --warn-bg: #301a1a;
   --intu: #67d4e8; --intu-bg: #0f2a31; --why: #a5a8ff; --why-bg: #1c1c3d; --conn: #7cc4f2; --conn-bg: #12263a;
+  --board: #7ee2a0; --board-bg: #10261a;
   --pivot: #93b4ff; --pivot-ink: #0d1117; --elim: #1c4a35; --free: #4a3b12;
   --c1: #93b4ff; --c2: #ffa36b; --c3: #6ee0b4; color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -138,6 +149,9 @@ blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--accent);
 .b-intuition { background: var(--intu-bg); border-left: 4px solid var(--intu); } .b-intuition .kind { color: var(--intu); }
 .b-why { background: var(--why-bg); border-left: 4px solid var(--why); } .b-why .kind { color: var(--why); }
 .b-connection { background: var(--conn-bg); border-left: 4px solid var(--conn); } .b-connection .kind { color: var(--conn); }
+.b-board { background: var(--board-bg); border: 1.5px solid var(--board); } .b-board .kind { color: var(--board); }
+.basis { margin-top: 10px; border-top: 1px dashed var(--board); padding-top: 8px; font-size: 0.82rem; color: var(--muted); }
+.basis strong { color: var(--board); }
 .support-label { font-size: 0.85rem; color: var(--ink); font-weight: 700; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--rule); }
 .recon { margin-top: 12px; border-top: 1px dashed var(--prof); padding-top: 10px; }
 .recon .recon-label { font-size: 0.78rem; color: var(--prof); font-weight: 700; }
@@ -183,6 +197,19 @@ th { background: var(--tint); }
 .flow-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .flow-svg line { stroke: var(--muted); stroke-width: 1.5; }
 .flow-svg text { fill: var(--accent); font-size: 12px; font-weight: 700; }
+.sch { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.sch .w { fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.sch .thick { stroke-width: 3; }
+.sch .bg { fill: var(--paper); }
+.sch .solid { fill: var(--ink); }
+.sch .dash { stroke-dasharray: 5 4; stroke-width: 1.3; }
+.sch .r-focus { stroke: var(--c2); stroke-width: 2.4; } .sch .solid.r-focus { fill: var(--c2); }
+.sch .r-signal { stroke: var(--c1); } .sch .solid.r-signal { fill: var(--c1); }
+.sch .r-muted { stroke: var(--muted); stroke-dasharray: 4 4; } .sch .solid.r-muted { fill: var(--muted); }
+.sch text, .sch text.w { stroke: none; fill: var(--ink); font-family: "Times New Roman", "Liberation Serif", "Noto Serif", Georgia, serif; font-style: italic; font-weight: 600; font-size: 16px; }
+.sch text.r-focus { fill: var(--c2); } .sch text.r-signal { fill: var(--c1); } .sch text.r-muted { fill: var(--muted); }
+.sch text.sign { font-style: normal; font-size: 13px; }
+.sch text.small { font-size: 12px; }
 .legend-dot { display: inline-block; width: 0.9em; height: 0.9em; border-radius: 50%; vertical-align: -0.1em; margin-right: 4px; }
 /* exam */
 .exam { display: grid; gap: 14px; }
@@ -400,6 +427,10 @@ def render_figure(figure: dict, fid: str) -> str:
         parts.append(_lines_svg(figure, fid))
     elif kind == "flow":
         parts.append(_flow_html(figure, fid))
+    elif kind == "schematic":
+        parts.append(f'<div style="overflow-x:auto">{schematic_svg(figure)}</div>')
+    elif kind == "plot":
+        parts.append(plot_svg(figure))
     if figure["caption"]:
         parts.append(f'<div class="fig-caption">{to_html(figure["caption"])}</div>')
     parts.append("</div>")
@@ -441,6 +472,9 @@ def render_main(
     eyebrow: str = "공부 노트",
 ) -> str:
     """The note body as one <main> element. `prefix` keeps ids unique when several notes share a document."""
+    note = note_v2_to_v3(note)
+    labels = {**KIND_LABELS, **get_domain(note["domain"]).kind_labels}
+    has_board = any(b["kind"] == "board" for e in note["entries"] for b in e["blocks"])
     names = {c["id"]: c["name"] for c in concept_map["concepts"]}
     core = set(concept_map["core_concepts"])
     emphasis = {p["id"]: p for ctx in contexts for group in ctx["professor_context"].values() for p in group}
@@ -482,7 +516,9 @@ def render_main(
     out.append(f'<nav class="toc" aria-label="개념 흐름">{"".join(toc)}</nav>')
     out.append(
         '<p class="legend">굵은 테두리는 핵심 개념입니다. 상자의 <span class="tag">추론</span>은 자료에 직접 없지만 흐름상 추론한 내용, '
-        '<span class="tag">불확실</span>은 자료만으로 확인이 어려운 내용입니다. 교수님 강조 상자의 "수업 설명 재구성"은 교안 근거로 추정한 설명이며 실제 발언 인용이 아닙니다.</p>'
+        '<span class="tag">불확실</span>은 자료만으로 확인이 어려운 내용입니다. 교수님 강조 상자의 "수업 설명 재구성"은 교안 근거로 추정한 설명이며 실제 발언 인용이 아닙니다.'
+        + (' 초록 테두리의 <strong>판서 복원</strong> 상자는 교안에 빈칸·결과만 있는 곳을 채운 추정 내용입니다. 수업 필기와 대조해 보세요.' if has_board else "")
+        + "</p>"
     )
 
     for number, entry in enumerate(note["entries"], start=1):
@@ -515,13 +551,15 @@ def render_main(
             method = ""
             if kind == "proof" and block["proof_method"]:
                 method = f'<span class="tag">{PROOF_METHOD_LABELS[block["proof_method"]]}</span>'
-            head = f'<div class="block-head"><span class="kind">{KIND_LABELS[kind]}</span>{title}{method}{_status_tag(block["status"])}</div>'
+            head = f'<div class="block-head"><span class="kind">{labels[kind]}</span>{title}{method}{_status_tag(block["status"])}</div>'
             body = f'<div class="flow">{to_html(block["body_markdown"])}</div>' if block["body_markdown"].strip() else ""
             if kind == "proof":
                 body += '<div class="qed" aria-label="증명 끝">∎</div><div style="clear:both"></div>'
             extra = ""
             if block["figure"] is not None:
                 extra += fig(block["figure"])
+            if kind == "board" and block["basis"]:
+                extra += f'<div class="basis"><strong>복원 근거</strong> {_inline(block["basis"])}</div>'
             if kind == "professor":
                 if block["reconstruction"]:
                     extra += (

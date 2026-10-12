@@ -80,6 +80,7 @@ def cmd_run(args) -> int:
         max_attempts=args.max_attempts,
         max_revisions=args.max_revisions,
         use_reviewer=not args.no_reviewer,
+        domain=args.domain,
     )
     orchestrator = Orchestrator(_make_llm(args), config)
     try:
@@ -156,6 +157,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--max-attempts", type=int, default=2)
     run.add_argument("--max-revisions", type=int, default=1)
     run.add_argument("--no-reviewer", action="store_true", help="skip the LLM quality reviewer")
+    run.add_argument("--domain", default="math", choices=["math", "circuits"], help="subject domain (prompts and box names)")
     run.set_defaults(func=cmd_run)
 
     pdf = sub.add_parser("pdf", help="export finished notes (run directories) as one PDF")

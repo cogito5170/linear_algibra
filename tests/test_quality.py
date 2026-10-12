@@ -15,7 +15,7 @@ from .helpers import fixtures
 
 def _block(kind, body="내용", refs=(), status="inferred", **extra):
     block = {"kind": kind, "title": "", "body_markdown": body, "refs": list(refs), "status": status,
-             "figure": None, "reconstruction": None, "proof_method": None}
+             "figure": None, "reconstruction": None, "proof_method": None, "basis": None}
     block.update(extra)
     return block
 

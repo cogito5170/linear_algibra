@@ -40,6 +40,8 @@ class OrchestratorConfig:
     use_reviewer: bool = True
     """Run the LLM quality reviewer in addition to deterministic checks."""
     style_profile: dict = field(default_factory=default_style_profile)
+    domain: str = "math"
+    """Subject domain (`domains.py`): adds its prompt and box names."""
 
 
 @dataclass
@@ -53,12 +55,12 @@ class PipelineResult:
 class Orchestrator:
     def __init__(self, llm: LLMClient, config: OrchestratorConfig | None = None):
         self.config = config or OrchestratorConfig()
-        n = self.config.max_attempts
-        self.analyst = MaterialAnalyst(llm, max_attempts=n)
-        self.mapper = ConceptMapper(llm, max_attempts=n)
-        self.teacher = IntuitionTeacher(llm, max_attempts=n)
-        self.editor = NoteEditor(llm, max_attempts=n)
-        self.reviewer = QualityReviewer(llm, max_attempts=n)
+        n, d = self.config.max_attempts, self.config.domain
+        self.analyst = MaterialAnalyst(llm, max_attempts=n, domain=d)
+        self.mapper = ConceptMapper(llm, max_attempts=n, domain=d)
+        self.teacher = IntuitionTeacher(llm, max_attempts=n, domain=d)
+        self.editor = NoteEditor(llm, max_attempts=n, domain=d)
+        self.reviewer = QualityReviewer(llm, max_attempts=n, domain=d)
 
     # ------------------------------------------------------------------
 
@@ -112,7 +114,8 @@ class Orchestrator:
         artifacts["learning_contexts"] = contexts
 
         teaching_request = {
-            "schema": "math_teaching_request/1",
+            "schema": "math_teaching_request/2",
+            "domain": self.config.domain,
             "title": bundle["title"],
             "style_profile": self.config.style_profile,
             "concept_map": concept_map,
@@ -122,7 +125,8 @@ class Orchestrator:
         artifacts["lesson"] = lesson
 
         note_request = {
-            "schema": "math_note_request/2",
+            "schema": "math_note_request/3",
+            "domain": self.config.domain,
             "title": bundle["title"],
             "style_profile": self.config.style_profile,
             "concept_map": concept_map,
@@ -167,7 +171,7 @@ class Orchestrator:
     def _quality(self, note, lesson, analysis, concept_map, contexts, guard_findings) -> dict:
         checks = list(guard_findings) + deterministic_checks(note, lesson, concept_map, contexts)
         if self.config.use_reviewer:
-            request = {"schema": "math_review_request/2", "analysis": analysis, "concept_map": concept_map, "note": note}
+            request = {"schema": "math_review_request/3", "analysis": analysis, "concept_map": concept_map, "note": note}
             try:
                 review = self.reviewer.run(request).output
             except AgentError as exc:
