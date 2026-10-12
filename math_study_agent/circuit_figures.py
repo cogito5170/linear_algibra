@@ -211,6 +211,25 @@ def _label_width(label: str) -> float:
     return (full * 0.5 + small * 0.4) * 16 / U
 
 
+_SUB = str.maketrans("0123456789+-=()aehijklmnoprstuvx", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ")
+
+
+def tex_to_plain(label: str) -> str:
+    """Light TeX ('$V_{in}$ → $2V_T$') as plain Unicode text, for places math cannot be typeset (flow arrows)."""
+    s = _TEXT_CMD.sub(r"\1", label.replace("$", ""))
+    for cmd in sorted(_SYMBOLS, key=len, reverse=True):
+        s = s.replace(cmd, _SYMBOLS[cmd])
+    s = re.sub(r"\\(?:mathrm|left|right|,|;|!)", "", s)
+
+    def sub(m: re.Match) -> str:
+        group = m.group(1) or m.group(2)
+        return group.translate(_SUB) if all(c in "0123456789+-=()aehijklmnoprstuvx" for c in group) else group
+
+    s = re.sub(r"_\{([^{}]*)\}|_(.)", sub, s)
+    s = re.sub(r"\^\{([^{}]*)\}|\^(.)", lambda m: m.group(1) or m.group(2), s)
+    return s.replace("{", "").replace("}", "").replace("\\", "")
+
+
 class _Pen:
     def __init__(self):
         self.parts: list[str] = []

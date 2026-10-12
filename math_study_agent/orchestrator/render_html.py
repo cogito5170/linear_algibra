@@ -17,7 +17,7 @@ import json
 import math
 from fractions import Fraction
 
-from ..circuit_figures import plot_svg, schematic_svg
+from ..circuit_figures import plot_svg, schematic_svg, tex_to_plain
 from ..domains import get_domain
 from ..epistemics import STATUS_LABELS_KO
 from ..schemas.upgrade import note_v2_to_v3
@@ -407,7 +407,10 @@ def _flow_html(figure: dict, fid: str) -> str:
         + "</div>"
         for d in sorted(layers)
     )
-    data = _e(json.dumps(edges, ensure_ascii=False))
+    # Edge labels are drawn as SVG text by script, where math cannot be typeset: send them as plain text
+    # (this also keeps "$" out of the attribute, which the PDF exporter would otherwise try to convert).
+    plain = [{**e, "label": tex_to_plain(e["label"])} for e in edges]
+    data = _e(json.dumps(plain, ensure_ascii=False))
     return f'<div class="flowchart" id="{fid}" data-edges="{data}"><svg class="flow-svg" aria-hidden="true"></svg>{rows}</div>'
 
 

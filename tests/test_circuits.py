@@ -81,6 +81,16 @@ class SchematicTest(unittest.TestCase):
         self.assertIn("‖", out)
         self.assertIn("π 1", out)
 
+    def test_flow_edge_labels_are_plain_text(self):
+        from math_study_agent.orchestrator.render_html import render_figure
+        figure = _figure("flow", nodes=[{"id": "a", "label": "$V_{in}$"}, {"id": "b", "label": "끝"}],
+                         edges=[{"from": "a", "to": "b", "label": "$g_m r_O \\gg 1$"}])
+        html = render_figure(figure, "f1")
+        edges = html.split('data-edges="')[1].split('"')[0]
+        self.assertNotIn("$", edges)
+        self.assertIn("≫", edges)
+        self.assertIn("$V_{in}$", html)  # node labels still go through MathJax / MathML
+
     def test_plot(self):
         good = _figure("plot", x_label="V_{in}", y_label="I_D",
                        series=[{"label": "", "xs": [0, 1, 2], "ys": [0, 1, 4], "style": "solid"}], marks=[])
