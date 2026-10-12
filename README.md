@@ -112,15 +112,37 @@ python3 -m math_study_agent schemas schemas/
 
 주요 옵션: `--model`(기본 `claude-opus-5-5`), `--effort`(기본 `high`), `--max-attempts`(agent별 재시도, 기본 2), `--max-revisions`(품질 검사 후 재작성 횟수, 기본 1), `--no-reviewer`, `--no-fallbacks`, `--handwritten-author professor|user|unknown`.
 
+## 분야: 회로 (`--domain circuits`)
+
+파이프라인, 계약, 근거 규칙은 분야와 관계없이 같습니다. 분야(`math_study_agent/domains.py`)는 분야별 프롬프트와 상자 이름만 더합니다.
+
+```zsh
+python3 -m math_study_agent run --slides lecture03.pdf --domain circuits --out runs/circ-L03
+```
+
+| 바뀌는 것 | 수학 | 회로 |
+|---|---|---|
+| 추가 프롬프트 | 없음 | `prompts/domain_circuits.md`: 처음 배우는 학생을 위한 기본 내용 보충, "~ 때문에 ~가 된다"식 인과 설명, 소신호·바이어스 표기, 근사에는 성립 조건, 숫자에는 단위 |
+| 상자 이름 | 정리 / 증명 / 계산 절차 | 핵심 결과 / 유도 / 해석 절차 |
+| 유도 방법 | 직관, 반례, 명제 이용, 직접 계산 | + 소신호 등가회로, KCL·KVL, 극한 확인, 앞 결과 이용 |
+| 그림 | 행 줄이기, 행렬, 직선, 흐름도 | + **회로도**(`schematic`), **곡선 그래프**(`plot`) |
+| 추가 품질 검사 | | 핵심 개념의 인과 설명(CL1), 계산 답의 단위(UN1) |
+
+**판서 복원 (`board` 상자).** 교안에 문제와 결과식만 있고 풀이는 판서로 채워진 경우, 판서 내용(유도 단계, 소신호 회로, 답)을 복원합니다. 판서 복원은 항상 `inferred`이고, 채운 교안 항목(E/F/T id)과 복원 근거(`basis`)를 가져야 하며, 노트에 "판서 복원 · 추정"으로 표시됩니다(검사 BD1, 어기면 오류). 교수님의 말투로 쓰지 않습니다.
+
+**회로도.** 격자 좌표(0.5 단위, y는 아래로 증가)에 소자를 놓습니다. 트랜지스터와 op amp는 위치 하나만 주면 단자 위치가 정해지고(`circuit_figures.py` 참고), 모든 단자가 다른 소자나 도선에 닿는지 검사합니다(떠 있는 단자는 오류). `role`로 설명 중인 부분(focus), 테스트 전원(signal), 0으로 둔 부분(muted, 점선)을 구분합니다.
+
+v3 schema(`math_intuition_lesson/3`, `math_note_request/3`, `math_study_note/3`, `math_review_request/3`, `math_teaching_request/2`)는 v2의 상위 집합입니다. v2 노트는 `schemas/upgrade.py`로 손실 없이 v3가 되므로 예전 실행 결과도 그대로 렌더링·PDF 출력됩니다.
+
 ## 구성 요소
 
 | 구성 요소 | 파일 | 입력 schema | 출력 schema |
 |---|---|---|---|
 | Material Analyst | `agents/material_analyst.py` | `math_material_bundle/1` | `math_material_analysis/1` |
 | Concept Mapper | `agents/concept_mapper.py` | `math_concept_mapping_request/1` | `math_concept_map/1` |
-| Intuition Teacher | `agents/intuition_teacher.py` | `math_teaching_request/1` | `math_intuition_lesson/1` |
-| Note Editor | `agents/note_editor.py` | `math_note_request/1` | `math_study_note/1` |
-| Quality Reviewer (Orchestrator 소속) | `orchestrator/quality.py` | `math_review_request/1` | `math_quality_review/1` |
+| Intuition Teacher | `agents/intuition_teacher.py` | `math_teaching_request/2` | `math_intuition_lesson/3` |
+| Note Editor | `agents/note_editor.py` | `math_note_request/3` | `math_study_note/3` |
+| Quality Reviewer (Orchestrator 소속) | `orchestrator/quality.py` | `math_review_request/3` | `math_quality_review/1` |
 | Orchestrator | `orchestrator/orchestrator.py` | | `math_quality_report/1`, Markdown |
 
 - **Prompt**: `math_study_agent/prompts/`. 모든 agent가 공통 원칙(`shared_principles.md`: 근거 상태, 금지 사항, 수학적 정확성)을 받고, 설명을 쓰는 agent는 스타일 가이드(`shared_style.md`: "직관적"의 정의, 설명 순서, 문체, 난이도 정책)를 추가로 받습니다.
